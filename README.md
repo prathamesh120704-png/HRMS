@@ -17,7 +17,8 @@ Read [RESEARCH.md](RESEARCH.md), [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.
 | 7 Attendance | Check in/out/WFH, month calendar, regularisation request, team today, holiday settings; **not yet tested live** |
 | 8 Leave balances and apply | Balance cards (opening/accrued/used/pending/available), apply form with live working days, LOP conversion, certificate upload, cancel, optional holidays; SQL vs TypeScript parity verified (640 checks) |
 | 9 Approvals and email | Manager/HR inbox (leave and attendance corrections), approve/reject with comment, balance moves pending to used only on approval, clash warning, secure certificate link, team leave calendar, email queue with Brevo sender and daily retry cron. **Run migration 0006.** Emails send only once SMTP is configured |
-| 10-12 Reports, agent, test and polish | Not started |
+| 10 Reports | Month-end summary screen and CSV download (HR: everyone, manager: own team), no PAN/Aadhaar/bank columns, formula-injection safe. Totals verified against an independent day-by-day calendar walk for three employees. Seed now adds 45 days of sample attendance |
+| 11-12 Agent, test and polish | Not started |
 
 ## Setup
 ```bash

@@ -10,7 +10,7 @@ export function navFor(s: { isHr: boolean; isManager: boolean }): NavItem[] {
     { href: '/leave/apply', label: 'Apply' },
     { href: '/profile', label: 'Profile' },
   ];
-  if (s.isHr || s.isManager) items.push({ href: '/approvals', label: 'Approvals' }, { href: '/team', label: 'Team' }, { href: '/team/leave', label: 'Leave calendar' });
+  if (s.isHr || s.isManager) items.push({ href: '/approvals', label: 'Approvals' }, { href: '/team', label: 'Team' }, { href: '/team/leave', label: 'Leave calendar' }, { href: '/reports', label: 'Reports' });
   if (s.isHr) items.push({ href: '/employees', label: 'Employees' }, { href: '/settings', label: 'Settings' });
   return items;
 }

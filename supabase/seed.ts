@@ -11,6 +11,8 @@
  * Aadhaar/PAN/bank values below are fake and for development only.
  */
 import { createClient } from '@supabase/supabase-js';
+import { isLate } from '../src/lib/domain/lateRules';
+import { addDays, dayOfWeek, istInstant, todayIST } from '../src/lib/time/ist';
 
 const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -162,6 +164,41 @@ A missed punch can be corrected by a regularisation request within 30 days, appr
         { onConflict: 'employee_id,leave_type_id,year' }).select(), `balance ${s.tag}/${t.code}`);
     }
   }
+  // ---- sample attendance for the last 45 days, so reports and calendars have something to show.
+  // Deterministic, location-aware (weekly offs and holidays skipped), and insert-only: ignoreDuplicates means real
+  // punches are never overwritten.
+  const { data: locRows } = await db.from('locations').select('id, weekly_off_days');
+  const { data: holRows } = await db.from('holidays').select('location_id, date, type');
+  const offDays = new Map<string, number[]>((locRows ?? []).map((l: { id: string; weekly_off_days: number[] }) => [l.id, l.weekly_off_days]));
+  const hols = new Set(
+    (holRows ?? []).filter((h: { type: string }) => h.type !== 'Optional').map((h: { location_id: string; date: string }) => `${h.location_id}|${h.date}`),
+  );
+  const todayStr = todayIST();
+  const attRows: Record<string, unknown>[] = [];
+  for (const [i, s2] of staff.entries()) {
+    const id = idByTag.get(s2.tag)!;
+    for (let back = 1; back <= 45; back++) {
+      const date = addDays(todayStr, -back);
+      if (date < s2.join) continue;
+      if ((offDays.get(s2.loc) ?? []).includes(dayOfWeek(date)) || hols.has(`${s2.loc}|${date}`)) continue;
+      const r = (i * 31 + back * 17 + i * back) % 100;
+      if (r >= 82 && r < 88) continue; // absent: no row
+      let inT = `09:0${r % 6}`;
+      let outT = `17:${10 + (r % 40)}`;
+      let wfh = false;
+      if (r >= 62 && r < 70) { inT = `10:${20 + (r % 20)}`; outT = '18:30'; } // late arrival
+      else if (r >= 70 && r < 76) { inT = '09:00'; outT = '13:30'; } // half day
+      else if (r >= 76 && r < 82) { wfh = true; } // work from home
+      attRows.push({
+        employee_id: id, date, check_in: istInstant(date, inT).toISOString(), check_out: istInstant(date, outT).toISOString(),
+        is_wfh: wfh, is_late: isLate(istInstant(date, inT)),
+      });
+    }
+  }
+  for (let k = 0; k < attRows.length; k += 500) {
+    must(await db.from('attendance').upsert(attRows.slice(k, k + 500), { onConflict: 'employee_id,date', ignoreDuplicates: true }).select('id'), 'attendance');
+  }
+  console.log(`Sample attendance: ${attRows.length} day records (existing days left untouched).`);
   console.log(`Seeded ${staff.length} employees, ${locations.length} locations, ${depts.length} departments for ${year}.`);
   console.log('HR Admin:', email('hr'), '| Managers:', email('mgr1'), email('mgr2'), email('mgr3'), '| Employee:', email('emp1'));
 }

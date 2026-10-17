@@ -21,8 +21,8 @@ function toLeave(r: LeaveRow): ApprovedLeave {
   return { from: r.from_date, to: r.to_date, isHalfDay: r.is_half_day, typeCode: code, isLop: code === 'LOP' };
 }
 
-/** Calendars for a set of locations and the optional holidays each employee picked, for a date range. */
-async function calendars(db: SupabaseClient, locationIds: string[], employeeIds: string[], from: ISODate, to: ISODate) {
+/** Calendars for a set of locations and the optional holidays each employee picked, for a date range. Shared with reports. */
+export async function calendars(db: SupabaseClient, locationIds: string[], employeeIds: string[], from: ISODate, to: ISODate) {
   const [locs, hols, picks] = await Promise.all([
     db.from('locations').select('id, weekly_off_days').in('id', locationIds),
     db.from('holidays').select('id, location_id, date, name, type').in('location_id', locationIds).gte('date', from).lte('date', to),
