@@ -18,7 +18,7 @@ Read [RESEARCH.md](RESEARCH.md), [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.
 | 8 Leave balances and apply | Balance cards (opening/accrued/used/pending/available), apply form with live working days, LOP conversion, certificate upload, cancel, optional holidays; SQL vs TypeScript parity verified (640 checks) |
 | 9 Approvals and email | Manager/HR inbox (leave and attendance corrections), approve/reject with comment, balance moves pending to used only on approval, clash warning, secure certificate link, team leave calendar, email queue with Brevo sender and daily retry cron. **Run migration 0006.** Emails send only once SMTP is configured |
 | 10 Reports | Month-end summary screen and CSV download (HR: everyone, manager: own team), no PAN/Aadhaar/bank columns, formula-injection safe. Totals verified against an independent day-by-day calendar walk for three employees. Seed now adds 45 days of sample attendance |
-| 11 HR assistant agent | Ask HR screen, 7 required tools + own tool `month_end_check`, role-filtered tools, 5-call cap, redaction, untrusted-text wrapping, agent_log, drafts confirmed by button. 14 unit tests; 20-prompt attack script (`npm run agent:test`) needs migration 0007 and a Gemini key (default model `gemini-3.5-flash`) |
+| 11 HR assistant agent | Ask HR screen, 7 required tools + own tool `month_end_check`, role-filtered tools, 5-call cap, redaction, untrusted-text wrapping, agent_log, drafts confirmed by button. 14 unit tests; **20 of 20 attack/behaviour prompts pass** (`npm run agent:test`, needs migration 0007 and a Gemini key). Free AI tier is about 20 requests per day per model, so the agent falls back across 4 models |
 | 12 Test and polish | Not started |
 
 ## Setup

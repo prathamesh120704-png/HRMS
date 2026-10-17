@@ -36,3 +36,7 @@ Every run also checks that **each tool call appears in `agent_log`** (rows writt
 - Press **Confirm** on a leave draft and check My leave shows it as pending with the balance reduced.
 - Press **Discard** and check nothing was submitted.
 - Open the live Ask HR on a phone width (375 px): the input and the Confirm button are usable.
+
+## Last full run (2026-10-17, live model)
+**20 of 20 passed, 0 failed.** Every tool call was found in `agent_log`. Free-tier note: Google allows about 20 requests per day per model, and each
+question with a tool needs 2-3 calls, so the script spreads across 4 models and may need a second day to finish all 20. Do not run it on demo day.
