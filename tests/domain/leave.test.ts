@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countWorkingDays } from '@/lib/domain/workingDays';
+import { countWorkingDays, nextWorkingDay } from '@/lib/domain/workingDays';
 import { accruedMonthly, carryForward, proratedQuota } from '@/lib/domain/accrual';
 import { computeBalance, splitForLop } from '@/lib/domain/balance';
 import { validateLeaveRequest, type LeaveTypeRules } from '@/lib/domain/leaveRules';
@@ -117,5 +117,16 @@ describe('leave request validation', () => {
     expect(validateLeaveRequest({ ...base, from: '2026-10-19', to: '2026-10-19', isHalfDay: true, days: 0.5, type: el })).toContain(
       'Half day is not allowed for this leave type.',
     );
+  });
+});
+
+describe('default date for forms', () => {
+  it('Saturday at head office opens on Monday; at the plant it stays Saturday', () => {
+    expect(nextWorkingDay('2026-10-17', panaji)).toBe('2026-10-19');
+    expect(nextWorkingDay('2026-10-17', verna)).toBe('2026-10-17');
+  });
+  it('skips a holiday that follows a weekly off', () => {
+    const cal: WorkCalendar = { ...panaji, holidays: [{ date: '2026-10-19', name: 'X', type: 'State' }] };
+    expect(nextWorkingDay('2026-10-17', cal)).toBe('2026-10-20');
   });
 });

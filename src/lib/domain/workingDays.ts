@@ -1,4 +1,4 @@
-import { dayOfWeek, eachDate, type ISODate } from '@/lib/time/ist';
+import { addDays, dayOfWeek, eachDate, type ISODate } from '@/lib/time/ist';
 import type { WorkCalendar } from './types';
 
 export type NonWorkingReason = 'weekly_off' | 'holiday';
@@ -42,4 +42,11 @@ export function countWorkingDays(args: {
     days = days > 0 ? 0.5 : 0;
   }
   return { days, excluded };
+}
+
+/** The first working day on or after `from`, used as the sensible default date in forms. */
+export function nextWorkingDay(from: ISODate, cal: WorkCalendar): ISODate {
+  let d = from;
+  for (let i = 0; i < 366 && nonWorkingReason(d, cal); i++) d = addDays(d, 1);
+  return d;
 }

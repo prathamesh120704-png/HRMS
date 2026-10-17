@@ -2,7 +2,7 @@
 import { useActionState, useMemo, useState } from 'react';
 import { Field, SelectField } from '@/components/ui/Field';
 import { SubmitButton } from '@/components/ui/SubmitButton';
-import { countWorkingDays } from '@/lib/domain/workingDays';
+import { countWorkingDays, nextWorkingDay } from '@/lib/domain/workingDays';
 import { validateLeaveRequest } from '@/lib/domain/leaveRules';
 import type { WorkCalendar } from '@/lib/domain/types';
 import { formatDateIST } from '@/lib/time/ist';
@@ -27,8 +27,9 @@ export function ApplyLeaveForm({ types, cal, existing, today, gender, defaultTyp
   const [state, action] = useActionState<ActionState, FormData>(submitLeaveAction, {});
   const e = state.errors ?? {};
   const [code, setCode] = useState(defaultType && types.some((t) => t.code === defaultType) ? defaultType : types[0]?.code ?? '');
-  const [from, setFrom] = useState(today);
-  const [to, setTo] = useState(today);
+  // Open on the next working day, not on a weekly off or holiday.
+  const [from, setFrom] = useState(() => nextWorkingDay(today, cal));
+  const [to, setTo] = useState(() => nextWorkingDay(today, cal));
   const [half, setHalf] = useState(false);
   const [hasFile, setHasFile] = useState(false);
   const [convert, setConvert] = useState(false);
@@ -63,7 +64,7 @@ export function ApplyLeaveForm({ types, cal, existing, today, gender, defaultTyp
   const canSubmit = !!calc && blocking.length === 0 && (!short || convert) && (!needsCert || hasFile);
 
   return (
-    <form action={action} noValidate encType="multipart/form-data">
+    <form action={action} noValidate>
       {state.message && <div className="alert alert-bad" role="alert">{state.message}</div>}
 
       <SelectField label="Leave type" name="type_code" required value={code} onChange={(ev) => { setCode(ev.target.value); setConvert(false); }}
