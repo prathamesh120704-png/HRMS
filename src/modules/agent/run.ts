@@ -53,12 +53,15 @@ export async function runAgent(args: {
 
   try {
     const result = await generateText({
-      model: google(process.env.AI_MODEL ?? 'gemini-2.5-flash'),
+      model: google(process.env.AI_MODEL ?? 'gemini-3.5-flash'),
       system: systemPrompt({ name: args.employee.full_name, role, location: args.location, today: args.today, weekday: DAY_NAMES[dayOfWeek(args.today)] }),
       messages,
       tools: buildTools(ctx, run),
       stopWhen: isStepCount(MAX_TOOL_CALLS + 2),
       temperature: 0,
+      // A hung or slow model call must not hang the page: give up after 40 s and retry once at most.
+      abortSignal: AbortSignal.timeout(40_000),
+      maxRetries: 1,
     });
     let answer = result.text.trim() || 'I could not work out an answer. Please rephrase, or ask HR.';
     const unverified = isUnverifiedNumbers(answer, ctx.limiter.count);
@@ -66,7 +69,9 @@ export async function runAgent(args: {
     return { answer, tools: run.traces, drafts: run.drafts, unverified };
   } catch (e) {
     const msg = e instanceof Error ? e.message : '';
-    const busy = /quota|rate|429|exhausted|limit/i.test(msg);
+    // Server log only: the user sees a friendly message, but the real cause must be findable.
+    console.error('[agent] model call failed:', msg.slice(0, 600));
+    const busy = /quota|rate|429|exhausted|limit|timeout|aborted|timed out/i.test(msg);
     return {
       answer: busy
         ? 'The assistant is busy right now (the free AI quota may be used up). Please try again in a minute, or use the Leave screens.'
