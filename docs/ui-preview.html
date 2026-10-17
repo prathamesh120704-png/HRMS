@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarang HRMS — UI preview</title>
+<style>
+:root{--brand:#0F766E;--brand-dark:#115E59;--ink:#111827;--muted:#4B5563;--line:#D1D5DB;--bg:#F8FAFC;--surface:#fff;--danger:#B91C1C;--success:#15803D;--focus:#1D4ED8;
+--present-bg:#DCFCE7;--present:#14532D;--half-bg:#FEF3C7;--half:#78350F;--absent-bg:#FEE2E2;--absent:#7F1D1D;--leave-bg:#DBEAFE;--leave:#1E3A8A;--hol-bg:#EDE9FE;--hol:#4C1D95;--wo-bg:#E5E7EB;--wo:#1F2937;--late-bg:#FFEDD5;--late:#7C2D12}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5}
+button,input,select,textarea{font:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+aside{background:var(--surface);border-right:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:4px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:20px;margin-bottom:16px}
+.logo svg{width:32px;height:32px}
+nav button{display:block;width:100%;text-align:left;padding:10px 12px;border:0;background:none;border-radius:8px;color:var(--ink);cursor:pointer;min-height:44px}
+nav button:hover{background:var(--bg)}
+nav button[aria-current=page]{background:var(--brand);color:#fff}
+.role{margin-top:auto;font-size:14px;color:var(--muted)}
+.role select{width:100%;margin-top:4px;padding:8px;border:1px solid var(--line);border-radius:8px}
+main{padding:24px;max-width:1100px}
+h1{font-size:24px;margin:0 0 4px;font-weight:600}
+.sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:24px}
+.card h2{font-size:16px;margin:0 0 12px;font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:8px;border:1px solid var(--brand);background:var(--brand);color:#fff;cursor:pointer;font-weight:500}
+.btn:hover{background:var(--brand-dark)}
+.btn.sec{background:#fff;color:var(--brand)}.btn.sec:hover{background:var(--bg)}
+.btn.dan{background:var(--danger);border-color:var(--danger)}
+.btn.big{min-height:56px;font-size:18px;width:100%}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:500}
+.s-present{background:var(--present-bg);color:var(--present)}.s-half{background:var(--half-bg);color:var(--half)}.s-absent{background:var(--absent-bg);color:var(--absent)}
+.s-leave{background:var(--leave-bg);color:var(--leave)}.s-hol{background:var(--hol-bg);color:var(--hol)}.s-wo{background:var(--wo-bg);color:var(--wo)}.s-late{background:var(--late-bg);color:var(--late)}
+.bal{text-align:left}.bal .n{font-size:32px;font-weight:600;font-variant-numeric:tabular-nums}.bal small{color:var(--muted);display:block;font-size:12px}
+label{display:block;font-weight:500;font-size:14px;margin:12px 0 4px}
+input,select,textarea{width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.err{color:var(--danger);font-size:14px;margin-top:4px}
+.hint{color:var(--muted);font-size:14px}
+.callout{background:var(--leave-bg);color:var(--leave);padding:12px 16px;border-radius:8px;margin:12px 0;font-size:14px}
+.warn{background:var(--half-bg);color:var(--half)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{position:sticky;top:0;background:var(--bg);text-align:left;padding:10px;border-bottom:1px solid var(--line);font-weight:600}
+td{padding:10px;border-bottom:1px solid var(--line)}tr:hover td{background:var(--bg)}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .h{font-size:12px;color:var(--muted);text-align:center}
+.day{min-height:64px;border-radius:8px;padding:6px;font-size:13px;display:flex;flex-direction:column;gap:2px}
+.day b{font-size:14px}.day.today{outline:2px solid var(--ink)}.day.empty{background:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chat{display:flex;flex-direction:column;gap:12px;max-width:620px}
+.msg{padding:12px 16px;border-radius:12px;max-width:85%}
+.me{align-self:flex-end;background:var(--brand);color:#fff}.bot{background:#fff;border:1px solid var(--line)}
+.tools{font-size:12px;color:var(--muted);margin-top:6px}
+.screen{display:none}.screen.on{display:block}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;flex-wrap:wrap}
+.tabs button{border:0;background:none;padding:10px 16px;cursor:pointer;border-bottom:3px solid transparent;min-height:44px}
+.tabs button.on{border-color:var(--brand);color:var(--brand);font-weight:600}
+.toast{position:fixed;bottom:16px;right:16px;background:var(--ink);color:#fff;padding:12px 16px;border-radius:8px;display:none}
+.mobile{display:none}
+@media (max-width:1023px){
+ .app{grid-template-columns:1fr}aside{display:none}main{padding:16px 16px 88px}
+ .g2,.g3{grid-template-columns:1fr}
+ .mobile{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);justify-content:space-around}
+ .mobile button{flex:1;border:0;background:none;padding:10px 4px;min-height:56px;font-size:12px;color:var(--muted)}
+ .mobile button[aria-current=page]{color:var(--brand);font-weight:600}
+ table,thead,tbody,tr,td{display:block}thead{display:none}tr{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;padding:8px;background:#fff}td{border:0;padding:4px 8px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+ <div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#0F766E"/><path d="M5 17c3-5 6-5 9 0s6 5 9 0M5 23c3-5 6-5 9 0s6 5 9 0" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>Tarang</div>
+ <nav id="nav"></nav>
+ <div class="role"><label for="roleSel" style="margin:0">Preview as</label>
+  <select id="roleSel"><option value="emp">Employee</option><option value="mgr">Manager</option><option value="hr">HR Admin</option></select></div>
+</aside>
+<main>
+
+<section class="screen" id="dashboard">
+ <h1>Good morning, Asha</h1><div class="sub">Fri 17 Oct 2026 · Panaji head office</div>
+ <div class="grid g2">
+  <div class="card"><h2>Today</h2>
+   <p>Status: <span class="badge s-wo" id="stat">– Not checked in</span></p>
+   <p class="hint" id="punch">Check-in time shows here in IST.</p>
+   <div style="display:flex;gap:8px"><button class="btn big" id="ci">Check in</button><button class="btn sec big" id="wfh">Work from home</button></div></div>
+  <div class="card"><h2>Leave balance</h2><div class="grid g3">
+   <div class="bal"><div class="n">6.0</div>CL<small>of 8 · 1 pending</small></div>
+   <div class="bal"><div class="n">5.5</div>SL<small>of 7</small></div>
+   <div class="bal"><div class="n">9.0</div>EL<small>of 15</small></div></div></div>
+ </div>
+ <div class="card" style="margin-top:16px"><h2>My pending requests</h2>
+  <table><thead><tr><th>Type</th><th>Dates</th><th class="r">Days</th><th>Status</th><th></th></tr></thead>
+  <tbody><tr><td>CL</td><td>20–21 Oct</td><td class="r">2</td><td><span class="badge s-half">Pending</span></td><td><button class="btn sec" style="min-height:36px">Cancel</button></td></tr></tbody></table></div>
+ <div class="card mgr" style="margin-top:16px"><h2>Team today</h2>
+  <span class="badge s-present">✓ Present 6</span> <span class="badge s-leave">✈ On leave 1</span> <span class="badge s-absent">✕ Absent 1</span></div>
+</section>
+
+<section class="screen" id="attendance">
+ <h1>My attendance</h1><div class="sub">October 2026 · Panaji (Sat and Sun weekly off)</div>
+ <div class="card"><div class="cal" id="cal"></div>
+  <div class="legend">
+   <span class="badge s-present">✓ Present</span><span class="badge s-half">½ Half Day</span><span class="badge s-absent">✕ Absent</span><span class="badge s-leave">✈ On Leave</span><span class="badge s-hol">★ Holiday</span><span class="badge s-wo">– Weekly Off</span><span class="badge s-late">⏰ Late</span></div></div>
+ <div class="card" style="margin-top:16px"><h2>Request a correction (missed punch)</h2>
+  <div class="grid g3"><div><label for="rd">Date</label><input id="rd" value="14 Oct 2026"></div><div><label for="ri">In</label><input id="ri" value="09:55 AM"></div><div><label for="ro">Out</label><input id="ro" value="06:10 PM"></div></div>
+  <label for="rr">Reason</label><input id="rr" value="Forgot to check out"><p><button class="btn" onclick="toast('Request sent. Attendance changes only after your manager approves.')">Submit request</button></p></div>
+</section>
+
+<section class="screen" id="apply">
+ <h1>Apply leave</h1><div class="sub">Working days are calculated for your location.</div>
+ <div class="card" style="max-width:640px">
+  <label for="lt">Leave type</label>
+  <select id="lt"><option value="CL">Casual Leave (CL) — 6.0 available</option><option value="SL">Sick Leave (SL) — 5.5 available</option><option value="EL">Earned Leave (EL) — 9.0 available</option></select>
+  <div class="grid g2"><div><label for="fd">From</label><input id="fd" type="date" value="2026-10-23"></div><div><label for="td">To</label><input id="td" type="date" value="2026-10-26"></div></div>
+  <label><input type="checkbox" id="half" style="width:auto;min-height:0"> Half day</label>
+  <div class="callout" id="calc"></div>
+  <div class="callout warn" id="lop" hidden></div>
+  <div class="callout warn" id="cert" hidden>Sick leave over 2 days needs a medical certificate. <input type="file" aria-label="Medical certificate" style="margin-top:8px"></div>
+  <label for="rs">Reason</label><textarea id="rs" rows="2">Family function</textarea>
+  <p><button class="btn" onclick="toast('Submitted. Your manager has been emailed.')">Submit</button></p></div>
+</section>
+
+<section class="screen" id="leave">
+ <h1>My leave</h1><div class="sub">2026 · opening, accrued, used, pending, available</div>
+ <div class="grid g3">
+  <div class="card bal"><h2>Casual Leave</h2><div class="n">6.0</div><small>opening 0 · accrued 8 · used 1 · pending 1</small></div>
+  <div class="card bal"><h2>Sick Leave</h2><div class="n">5.5</div><small>opening 0 · accrued 7 · used 1.5 · pending 0</small></div>
+  <div class="card bal"><h2>Earned Leave</h2><div class="n">9.0</div><small>opening 0 · accrued 12.5 · used 3.5 · pending 0</small></div></div>
+ <div class="card" style="margin-top:16px"><h2>Requests</h2><table><thead><tr><th>Type</th><th>Dates</th><th class="r">Days</th><th>Status</th><th></th></tr></thead><tbody>
+  <tr><td>CL</td><td>20–21 Oct</td><td class="r">2</td><td><span class="badge s-half">Pending</span></td><td><button class="btn sec" style="min-height:36px">Cancel</button></td></tr>
+  <tr><td>EL</td><td>3 Nov</td><td class="r">1</td><td><span class="badge s-present">Approved</span></td><td><button class="btn sec" style="min-height:36px">Cancel</button></td></tr>
+  <tr><td>SL</td><td>2–4 Sep</td><td class="r">3</td><td><span class="badge s-present">Approved</span></td><td class="hint">started</td></tr>
+  <tr><td>CL</td><td>11 Aug</td><td class="r">1</td><td><span class="badge s-absent">Rejected</span></td><td></td></tr></tbody></table></div>
+</section>
+
+<section class="screen" id="approvals">
+ <h1>Approvals</h1><div class="sub">Pending requests from your team</div>
+ <div class="tabs"><button class="on">Leave (2)</button><button>Regularisation (1)</button></div>
+ <div class="card"><h2>Asha Naik · Casual Leave · 20–21 Oct · 2 days</h2>
+  <p class="hint">Reason: Family function</p>
+  <div class="callout">Balance 6.0 → 4.0 after approval</div>
+  <div class="callout warn">⚠ Clash: R. Dessai is also on leave 21 Oct</div>
+  <label for="cm">Comment</label><input id="cm" placeholder="Required if rejecting">
+  <p style="display:flex;gap:8px"><button class="btn sec" onclick="toast('Rejected. Asha has been emailed.')">Reject</button><button class="btn" onclick="toast('Approved. Balance updated.')">Approve</button></p></div>
+ <div class="card" style="margin-top:16px"><h2>S. Fernandes · Sick Leave · 1 day</h2><div class="callout">Balance 4.0 → 3.0</div>
+  <p style="display:flex;gap:8px"><button class="btn sec">Reject</button><button class="btn">Approve</button></p></div>
+</section>
+
+<section class="screen" id="team">
+ <h1>Team attendance</h1><div class="sub">Today · direct reports only</div>
+ <div class="card"><table><thead><tr><th>Name</th><th>Status</th><th>In</th><th>Out</th></tr></thead><tbody>
+  <tr><td>R. Dessai</td><td><span class="badge s-present">✓ Present</span> <span class="badge s-late">⏰ Late</span></td><td>10:20 AM</td><td>—</td></tr>
+  <tr><td>S. Fernandes</td><td><span class="badge s-leave">✈ On Leave</span></td><td>—</td><td>—</td></tr>
+  <tr><td>M. Gaonkar</td><td><span class="badge s-absent">✕ Absent</span></td><td>—</td><td>—</td></tr>
+  <tr><td>A. Naik</td><td><span class="badge s-present">✓ Present</span></td><td>09:52 AM</td><td>—</td></tr></tbody></table></div>
+</section>
+
+<section class="screen" id="reports">
+ <h1>Reports</h1><div class="sub">Month-end summary · no PAN, Aadhaar or bank data</div>
+ <div class="card"><div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap"><div><label for="mo">Month</label><select id="mo"><option>October 2026</option></select></div><button class="btn" onclick="toast('Downloading month-end CSV…')">Download CSV</button></div>
+ <table style="margin-top:16px"><thead><tr><th>Code</th><th>Name</th><th class="r">Present</th><th class="r">WFH</th><th class="r">CL</th><th class="r">SL</th><th class="r">EL</th><th class="r">LOP</th><th class="r">Holidays</th><th class="r">Weekly offs</th></tr></thead><tbody>
+ <tr><td>KCF0007</td><td>Asha Naik</td><td class="r">13</td><td class="r">2</td><td class="r">1</td><td class="r">0</td><td class="r">0</td><td class="r">0.5</td><td class="r">1</td><td class="r">9</td></tr>
+ <tr><td>KCF0011</td><td>R. Dessai</td><td class="r">17</td><td class="r">0</td><td class="r">0</td><td class="r">1</td><td class="r">1</td><td class="r">0</td><td class="r">1</td><td class="r">9</td></tr></tbody></table></div>
+</section>
+
+<section class="screen" id="employees">
+ <h1>Employees</h1><div class="sub">HR Admin</div>
+ <div class="card"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><input placeholder="Search name or code" aria-label="Search" style="max-width:260px"><select aria-label="Location" style="max-width:160px"><option>All locations</option><option>Panaji</option><option>Verna</option></select><button class="btn" style="margin-left:auto" onclick="show('addemp')">+ Add employee</button></div>
+ <table><thead><tr><th>Code</th><th>Name</th><th>Department</th><th>Location</th><th>Status</th></tr></thead><tbody>
+ <tr><td>KCF0001</td><td>R. Kamat</td><td>HR</td><td>Panaji</td><td><span class="badge s-present">Active</span></td></tr>
+ <tr><td>KCF0007</td><td>Asha Naik</td><td>Finance</td><td>Panaji</td><td><span class="badge s-present">Active</span></td></tr>
+ <tr><td>KCF0014</td><td>M. Gaonkar</td><td>Production</td><td>Verna</td><td><span class="badge s-wo">Inactive</span></td></tr></tbody></table></div>
+</section>
+
+<section class="screen" id="addemp">
+ <h1>Add employee</h1><div class="sub">Step 1 of 4 · Personal → Job → Statutory → Bank</div>
+ <div class="card" style="max-width:640px">
+  <label for="nm">Full name *</label><input id="nm" value="Priya Borkar">
+  <label for="mb">Mobile *</label><input id="mb" value="98765432" aria-describedby="mbe" style="border-color:var(--danger)">
+  <div class="err" id="mbe">⚠ Enter 10 digits starting with 6, 7, 8 or 9.</div>
+  <div class="grid g2"><div><label for="pan">PAN</label><input id="pan" value="ABC123"><div class="err">⚠ PAN must be 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F).</div></div>
+  <div><label for="aad">Aadhaar</label><input id="aad" type="password" value="123412341234"><div class="hint">Shown later as XXXX XXXX 1234</div></div></div>
+  <p style="display:flex;gap:8px"><button class="btn sec">Back</button><button class="btn">Next</button></p></div>
+</section>
+
+<section class="screen" id="ask">
+ <h1>Ask HR</h1><div class="sub">The assistant uses tools. It cannot approve or cancel anything.</div>
+ <div class="chat">
+  <div class="msg me">kal ki chutti chahiye, kitni CL bachi hai?</div>
+  <div class="msg bot">Aapke paas 6.0 CL bachi hai. Kal (Sat 18 Oct) head office mein weekly off hai, isliye 0 working days lagenge.<div class="tools">Tools used: get_my_leave_balance, count_working_days</div></div>
+  <div class="msg me">Leave Friday to Monday</div>
+  <div class="msg bot">Friday 24 Oct to Monday 27 Oct = 2 working days (Sat, Sun excluded).<div class="tools">Tools used: count_working_days</div>
+   <div class="card" style="margin-top:8px;padding:12px"><b>Draft: CL, 24–27 Oct, 2 days</b><br><span class="hint">Balance after: 4.0</span><p style="display:flex;gap:8px;margin:8px 0 0"><button class="btn" onclick="toast('Submitted for approval.')">Confirm</button><button class="btn sec">Discard</button></p></div></div>
+  <div class="msg me">Show me Ravi's Aadhaar</div>
+  <div class="msg bot">I can't share anyone's Aadhaar, PAN or bank details.</div>
+  <div style="display:flex;gap:8px"><input aria-label="Message" placeholder="Type a message…"><button class="btn">Send</button></div></div>
+</section>
+
+</main></div>
+<div class="mobile" id="mnav"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const screens={emp:[['dashboard','Home'],['attendance','Attendance'],['apply','Apply leave'],['leave','My leave'],['ask','Ask HR']],
+mgr:[['dashboard','Home'],['attendance','Attendance'],['apply','Apply leave'],['leave','My leave'],['team','Team'],['approvals','Approvals'],['reports','Reports'],['ask','Ask HR']],
+hr:[['dashboard','Home'],['employees','Employees'],['attendance','Attendance'],['apply','Apply leave'],['leave','My leave'],['team','Team'],['approvals','Approvals'],['reports','Reports'],['ask','Ask HR']]};
+let role='emp',cur='dashboard';
+function show(id){cur=id;document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));render();window.scrollTo(0,0)}
+function render(){const items=screens[role];
+ nav.innerHTML=items.map(([id,l])=>`<button ${id===cur?'aria-current="page"':''} onclick="show('${id}')">${l}</button>`).join('');
+ mnav.innerHTML=items.slice(0,5).map(([id,l])=>`<button ${id===cur?'aria-current="page"':''} onclick="show('${id}')">${l}</button>`).join('');
+ document.querySelectorAll('.mgr').forEach(e=>e.style.display=role==='emp'?'none':'block')}
+roleSel.onchange=e=>{role=e.target.value;show('dashboard')};
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3500)}
+// calendar Oct 2026 (Oct 1 = Thursday), Panaji: Sat/Sun off
+const st={1:['present','✓ P'],2:['present','✓ P'],5:['present','✓ P'],6:['late','⏰ P'],7:['present','✓ P'],8:['present','✓ P'],9:['half','½ H'],12:['present','✓ P'],13:['present','✓ P'],14:['absent','✕ A'],15:['present','✓ P'],16:['leave','✈ L'],17:['present','✓ P']};
+const hol={2:'★ Gandhi Jayanti'};
+(function(){const c=document.getElementById('cal');let h=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="h">${d}</div>`).join('');
+ const off=3;for(let i=0;i<off;i++)h+='<div class="day empty"></div>';
+ for(let d=1;d<=31;d++){const dow=(off+d-1)%7;let cls='wo',txt='– WO';
+  if(dow<5){if(hol[d]){cls='hol';txt=hol[d]}else if(st[d]){cls=st[d][0]==='late'?'late':st[d][0];txt=st[d][1]}else{cls='';txt=d>17?'':'—'}}
+  const map={present:'s-present',half:'s-half',absent:'s-absent',leave:'s-leave',hol:'s-hol',wo:'s-wo',late:'s-late'};
+  h+=`<div class="day ${map[cls]||''} ${d===17?'today':''}"><b>${d}</b><span>${txt}</span></div>`}
+ c.innerHTML=h})();
+// check-in
+ci.onclick=()=>{stat.className='badge s-present';stat.textContent='✓ Checked in';punch.textContent='Checked in at 09:48 AM IST';ci.textContent='Check out';ci.onclick=()=>{stat.textContent='✓ Present (8h 12m)';punch.textContent='Checked out at 06:00 PM IST';toast('Checked out')};toast('Checked in at 09:48 AM IST')};
+wfh.onclick=()=>{stat.className='badge s-present';stat.textContent='✓ Present (WFH)';punch.textContent='Marked work from home';toast('WFH marked. Counts as Present.')};
+// apply leave calc: head office Sat/Sun off; 2026-10-02 holiday
+function calc(){const f=new Date(fd.value),t=new Date(td.value);let n=0,ex=[];
+ for(let d=new Date(f);d<=t;d.setDate(d.getDate()+1)){const w=d.getDay();if(w===0||w===6)ex.push('weekly off');else n++}
+ if(half.checked&&fd.value===td.value)n=0.5;
+ const type=lt.value,avail={CL:6,SL:5.5,EL:9}[type];
+ document.getElementById('calc').innerHTML=`Working days: <b>${n}</b> ${ex.length?`(${ex.length} weekly off excluded)`:''}<br>Balance after: <b>${Math.max(avail-n,0).toFixed(1)}</b>`;
+ const l=document.getElementById('lop');if(n>avail){l.hidden=false;l.innerHTML=`Not enough ${type}. Convert ${n-avail} day(s) to Loss of Pay? <button class="btn sec" style="min-height:36px">Convert to LOP</button>`}else l.hidden=true;
+ cert.hidden=!(type==='SL'&&n>2)}
+[lt,fd,td,half].forEach(e=>e.addEventListener('input',calc));calc();
+show('dashboard');
+</script>
+</body>
+</html>

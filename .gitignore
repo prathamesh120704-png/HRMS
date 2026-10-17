@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# builds
+.next/
+out/
+dist/
+coverage/
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# misc
+.vercel/
+.DS_Store
+*.log
+*.tsbuildinfo
+next-env.d.ts

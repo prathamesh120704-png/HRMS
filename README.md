@@ -1,0 +1,49 @@
+# Tarang HRMS — Konkan Coastal Foods
+
+HRMS for a 180-person company in Goa: Employee Master, Attendance, Leave and an AI assistant ("Ask HR").
+Read [RESEARCH.md](RESEARCH.md), [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.md](DESIGN.md) first.
+
+**Live URL:** _not deployed yet_
+
+## Status
+| Checkpoint | State |
+|---|---|
+| 1 Research, 2 Architecture and design | Drafted (v0.2), awaiting faculty sign-off |
+| 3 Fresh setup | Project scaffold and tooling done; not deployed |
+| 4 Database and seed | Migrations and seed script written; **not yet run against a database** |
+| Domain rules (working days, day status, Late, accrual, balance, LOP, validation, masking) | Done, 47 unit tests pass in 4 time zones |
+| 5 Login and roles | Code written (Clerk -> employees by email, role from DB, access-denied); **not yet tested against live Clerk/Supabase** |
+| 6 Employee Master | Directory, multi-step add, profile tabs, masking, self-service edit, deactivate, Reveal, history; **not yet tested live** |
+| 7 Attendance | Check in/out/WFH, month calendar, regularisation request, team today, holiday settings; **not yet tested live** |
+| 8-12 Leave screens, approvals, email, reports, agent | Not started (leave rules and SQL functions exist) |
+
+## Setup
+```bash
+npm install
+cp .env.example .env.local     # fill in values; never commit this file
+npm test                       # domain unit tests
+npm run lint                   # TypeScript check
+```
+### 1. Supabase
+1. Create a free project. Put `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (server-only; no `NEXT_PUBLIC_`).
+2. Run `supabase/migrations/0001` to `0005` in order (SQL editor or CLI).
+3. Authentication > Sign In / Providers > Third-party: add **Clerk** with your Clerk domain, so Supabase accepts Clerk session tokens.
+
+### 2. Clerk
+1. Create an application; put the publishable and secret keys in `.env.local`.
+2. Enable the Supabase integration (Clerk Dashboard > Integrations) so session tokens carry `role: authenticated`.
+3. Sessions > Customize session token, add the claim: `{"email": "{{user.primary_email_address}}"}`. The database links a first sign-in to its employee row by this verified email.
+4. Restrict sign-up (invite-only or allowlist). Create the seed users listed below.
+
+### 3. Seed and run
+```bash
+npm run seed     # needs SEED_EMAIL_BASE for usable logins; idempotent, never deletes
+npm run dev
+```
+
+## Test logins
+Set `SEED_EMAIL_BASE=you@gmail.com` before seeding. Users are created with plus-addressing and must exist in Clerk (invite-only):
+`you+hr@gmail.com` (HR Admin), `you+mgr1@gmail.com`, `you+mgr2@gmail.com`, `you+mgr3@gmail.com` (managers), `you+emp1@gmail.com` ... `you+emp16@gmail.com` (employees). `emp16` joined on 1 July for pro-rating tests.
+
+## Rules
+- All times are IST. Never commit secrets. Roles come from the database. See [CLAUDE.md](CLAUDE.md).
