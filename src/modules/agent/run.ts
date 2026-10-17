@@ -54,17 +54,22 @@ export async function runAgent(args: {
   const role = args.isHr ? 'HR Admin' : args.isManager ? 'Manager' : 'Employee';
 
   // The free tier allows very few requests per model per day (observed: 20), and each question needs 2-3 model calls,
-  // so a quota/availability error moves on to the next model in the list. We only fall back BEFORE any tool has run,
-  // so a draft or an agent_log row is never duplicated.
+  // so a quota/availability error moves on to the next model in the list. If tools had already run, the next model
+  // CONTINUES from the tool results collected so far (`carried`); the tools are never run again, so a draft or an
+  // agent_log row is never duplicated, and the 5-call limit still counts across all attempts.
   const models = (process.env.AI_MODEL ?? DEFAULT_MODELS).split(',').map((m) => m.trim()).filter(Boolean);
   const system = systemPrompt({ name: args.employee.full_name, role, location: args.location, today: args.today, weekday: DAY_NAMES[dayOfWeek(args.today)] });
   const tools = buildTools(ctx, run);
   let busy = false;
+  let carried: ModelMessage[] = []; // tool calls and results from attempts that failed part-way
+  let generated: ModelMessage[] = []; // what the current attempt has produced so far
 
   for (const model of models) {
+    generated = [];
     try {
       const result = await generateText({
-        model: google(model), system, messages, tools,
+        model: google(model), system, messages: [...messages, ...carried], tools,
+        onStepEnd: (step) => { generated = step.response.messages as ModelMessage[]; },
         stopWhen: isStepCount(MAX_TOOL_CALLS + 2),
         temperature: 0,
         // A hung or slow model call must not hang the page: give up after 40 s and retry once at most.
@@ -82,7 +87,8 @@ ${UNVERIFIED_NOTE}`;
       // Server log only: the user sees a friendly message, but the real cause must be findable.
       console.error(`[agent] ${model} failed:`, msg.slice(0, 400));
       busy = /quota|exceeded|429|exhausted|rate|timeout|aborted|timed out|not found|no longer available|404|503|overloaded|unavailable/i.test(msg);
-      if (!busy || ctx.limiter.count > 0) break; // not a model-availability problem, or tools already ran: do not retry
+      if (!busy) break; // a real error, not a model-availability problem: do not hide it behind a retry
+      carried = [...carried, ...generated]; // keep any tool results so the next model does not repeat them
     }
   }
   return {
