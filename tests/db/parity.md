@@ -16,3 +16,9 @@ exists and compare. The TypeScript side is already covered by `tests/domain`.
 | Joined 2026-07-01: EL as of 2026-12-31 | 7.5 |
 | Joined 2026-07-10: EL as of 2026-12-31 | 6.25 |
 | Joined 2026-01-01: EL as of 2026-03-30 | 2.5 |
+
+## Result (2026-10-17)
+Ran against the live Supabase database for all 20 seeded employees: accrual for every leave type at three dates, and
+working-day counts for 7 date ranges (full day, half day, calendar-days) at both locations, including holidays.
+**640 checks, 0 mismatches.** Re-run after any change to `leave_count_days`, `leave_accrued`, `countWorkingDays`
+or `accruedFor`.

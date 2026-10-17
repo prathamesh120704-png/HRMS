@@ -14,7 +14,7 @@ export default async function Dashboard() {
   const [rec, month, cards, team] = await Promise.all([
     todayRecord(s.db, e.id, today),
     monthFor(s.db, e, today.slice(0, 7), today),
-    balanceCards(s.db, e.id, Number(today.slice(0, 4))),
+    balanceCards(s.db, e, Number(today.slice(0, 4)), today),
     s.isManager || s.isHr ? teamToday(s.db, s.isHr ? {} : { managerId: e.id }, today) : Promise.resolve(null),
   ]);
 

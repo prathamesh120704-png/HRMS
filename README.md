@@ -15,7 +15,8 @@ Read [RESEARCH.md](RESEARCH.md), [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.
 | 5 Login and roles | Code written (Clerk -> employees by email, role from DB, access-denied); **not yet tested against live Clerk/Supabase** |
 | 6 Employee Master | Directory, multi-step add, profile tabs, masking, self-service edit, deactivate, Reveal, history; **not yet tested live** |
 | 7 Attendance | Check in/out/WFH, month calendar, regularisation request, team today, holiday settings; **not yet tested live** |
-| 8-12 Leave screens, approvals, email, reports, agent | Not started (leave rules and SQL functions exist) |
+| 8 Leave balances and apply | Balance cards (opening/accrued/used/pending/available), apply form with live working days, LOP conversion, certificate upload, cancel, optional holidays; SQL vs TypeScript parity verified (640 checks) |
+| 9-12 Approvals and email, reports, agent | Not started |
 
 ## Setup
 ```bash

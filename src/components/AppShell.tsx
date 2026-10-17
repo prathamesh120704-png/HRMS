@@ -6,6 +6,8 @@ export function navFor(s: { isHr: boolean; isManager: boolean }): NavItem[] {
   const items: NavItem[] = [
     { href: '/dashboard', label: 'Home' },
     { href: '/attendance', label: 'Attendance' },
+    { href: '/leave', label: 'Leave' },
+    { href: '/leave/apply', label: 'Apply' },
     { href: '/profile', label: 'Profile' },
   ];
   if (s.isHr || s.isManager) items.push({ href: '/team', label: 'Team' });
