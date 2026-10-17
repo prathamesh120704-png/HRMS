@@ -3,14 +3,14 @@
 HRMS for a 180-person company in Goa: Employee Master, Attendance, Leave and an AI assistant ("Ask HR").
 Read [RESEARCH.md](RESEARCH.md), [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.md](DESIGN.md) first.
 
-**Live URL:** _not deployed yet_
+**Live URL:** https://hrms-pi-three.vercel.app
 
 ## Status
 | Checkpoint | State |
 |---|---|
 | 1 Research, 2 Architecture and design | Drafted (v0.2), awaiting faculty sign-off |
-| 3 Fresh setup | Project scaffold and tooling done; not deployed |
-| 4 Database and seed | Migrations and seed script written; **not yet run against a database** |
+| 3 Fresh setup | Done: deployed on Vercel (Hobby), connected to Supabase and Clerk (development instance) |
+| 4 Database and seed | Migrations 0001-0005 run and seed loaded (20 employees); parity check of SQL vs TypeScript maths still to do |
 | Domain rules (working days, day status, Late, accrual, balance, LOP, validation, masking) | Done, 47 unit tests pass in 4 time zones |
 | 5 Login and roles | Code written (Clerk -> employees by email, role from DB, access-denied); **not yet tested against live Clerk/Supabase** |
 | 6 Employee Master | Directory, multi-step add, profile tabs, masking, self-service edit, deactivate, Reveal, history; **not yet tested live** |
