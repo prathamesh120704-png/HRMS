@@ -1,0 +1,38 @@
+{
+  "name": "tarang-hrms",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:tz": "cross-env TZ=America/New_York vitest run && cross-env TZ=UTC vitest run && cross-env TZ=Asia/Kolkata vitest run",
+    "seed": "tsx --env-file=.env.local supabase/seed.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^4.0.99",
+    "@clerk/nextjs": "^7.9.17",
+    "@supabase/supabase-js": "^2.118.0",
+    "ai": "^7.0.143",
+    "date-fns": "^4.4.0",
+    "date-fns-tz": "^3.2.0",
+    "next": "^16.4.2",
+    "nodemailer": "^10.1.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/nodemailer": "^8.0.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}
