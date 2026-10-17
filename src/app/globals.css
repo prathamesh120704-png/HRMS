@@ -97,6 +97,12 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .day .late { font-size: 11px; }
 .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 
+/* chat */
+.chat-log { display: flex; flex-direction: column; gap: 12px; min-height: 280px; max-height: 60vh; overflow-y: auto; }
+.msg { padding: 12px 16px; border-radius: 12px; max-width: 88%; }
+.msg.me { align-self: flex-end; background: var(--brand); color: #fff; }
+.msg.bot { align-self: flex-start; background: #fff; border: 1px solid var(--line); }
+
 @media (max-width: 1023px) {
   .shell { grid-template-columns: 1fr; }
   .sidebar { display: none; }

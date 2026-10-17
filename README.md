@@ -18,7 +18,8 @@ Read [RESEARCH.md](RESEARCH.md), [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.
 | 8 Leave balances and apply | Balance cards (opening/accrued/used/pending/available), apply form with live working days, LOP conversion, certificate upload, cancel, optional holidays; SQL vs TypeScript parity verified (640 checks) |
 | 9 Approvals and email | Manager/HR inbox (leave and attendance corrections), approve/reject with comment, balance moves pending to used only on approval, clash warning, secure certificate link, team leave calendar, email queue with Brevo sender and daily retry cron. **Run migration 0006.** Emails send only once SMTP is configured |
 | 10 Reports | Month-end summary screen and CSV download (HR: everyone, manager: own team), no PAN/Aadhaar/bank columns, formula-injection safe. Totals verified against an independent day-by-day calendar walk for three employees. Seed now adds 45 days of sample attendance |
-| 11-12 Agent, test and polish | Not started |
+| 11 HR assistant agent | Ask HR screen, 7 required tools + own tool `month_end_check`, role-filtered tools, 5-call cap, redaction, untrusted-text wrapping, agent_log, drafts confirmed by button. 14 unit tests; 20-prompt attack script (`npm run agent:test`) **needs migration 0007 and a Gemini key** |
+| 12 Test and polish | Not started |
 
 ## Setup
 ```bash
@@ -29,7 +30,7 @@ npm run lint                   # TypeScript check
 ```
 ### 1. Supabase
 1. Create a free project. Put `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (server-only; no `NEXT_PUBLIC_`).
-2. Run `supabase/migrations/0001` to `0006` in order (SQL editor or CLI).
+2. Run `supabase/migrations/0001` to `0007` in order (SQL editor or CLI).
 3. Authentication > Sign In / Providers > Third-party: add **Clerk** with your Clerk domain, so Supabase accepts Clerk session tokens.
 
 ### 2. Clerk

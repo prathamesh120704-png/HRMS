@@ -9,7 +9,8 @@
     "lint": "tsc --noEmit",
     "test": "vitest run",
     "test:tz": "cross-env TZ=America/New_York vitest run && cross-env TZ=UTC vitest run && cross-env TZ=Asia/Kolkata vitest run",
-    "seed": "tsx --env-file=.env.local supabase/seed.ts"
+    "seed": "tsx --env-file=.env.local supabase/seed.ts",
+    "agent:test": "tsx --conditions=react-server --env-file=.env.local scripts/run-agent-prompts.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.99",

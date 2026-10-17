@@ -21,7 +21,7 @@ export function AppShell({ fullName, employeeCode, isHr, isManager, children }: 
 }) {
   const items = navFor({ isHr, isManager });
   // The phone bar has room for five: approvers swap Profile for Approvals.
-  const phone = (isHr || isManager ? items.filter((i) => ['/dashboard', '/attendance', '/leave', '/leave/apply', '/approvals'].includes(i.href)) : items.slice(0, 5));
+  const phone = (isHr || isManager ? items.filter((i) => ['/dashboard', '/leave', '/leave/apply', '/ask', '/approvals'].includes(i.href)) : items.filter((i) => ['/dashboard', '/attendance', '/leave', '/leave/apply', '/ask'].includes(i.href)));
   const role = isHr ? 'HR Admin' : isManager ? 'Manager' : 'Employee';
   return (
     <div className="shell">
