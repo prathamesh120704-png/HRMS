@@ -1,55 +1,85 @@
-# Tarang HRMS — Konkan Coastal Foods
+# Tarang HRMS: Konkan Coastal Foods
 
-HRMS for a 180-person company in Goa: Employee Master, Attendance, Leave and an AI assistant ("Ask HR").
-Read [RESEARCH.md](RESEARCH.md), [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.md](DESIGN.md) first.
+HRMS for a 180-person company in Goa (head office Panaji, plant Verna): **Employee Master, Attendance, Leave** and an **AI assistant ("Ask HR")** that does real work through server tools.
+Indian HR rules throughout: PAN, Aadhaar, UAN and IFSC validation, IST everywhere, location-wise weekly offs and holidays, the company leave policy.
 
-**Live URL:** https://hrms-pi-three.vercel.app
+**Live app:** https://hrms-pi-three.vercel.app · **Repo:** https://github.com/prathamesh120704-png/HRMS
+
+## Documents
+| File | What it is |
+|---|---|
+| [RESEARCH.md](RESEARCH.md) | Research answers, sources, and the business rules R1–R35 |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Stack, data model, access control, agent design, **decision log** |
+| [DESIGN.md](DESIGN.md) | Flows, wireframes, design system |
+| [CLAUDE.md](CLAUDE.md) | Rules for Claude Code in this repo, plus lessons learned |
+| [VIVA.md](VIVA.md) | Every rule: where it lives and why |
+| [DEMO.md](DEMO.md) | The 5–7 minute demo script |
+| [docs/TEST-REPORT.md](docs/TEST-REPORT.md) | Automated checklist results (43 checks) |
+| [docs/MANUAL-CHECKLIST.md](docs/MANUAL-CHECKLIST.md) | Checklist items that need a signed-in browser |
+| [tests/agent/prompts.md](tests/agent/prompts.md) | The 20 agent attack/behaviour prompts and results |
 
 ## Status
-| Checkpoint | State |
-|---|---|
-| 1 Research, 2 Architecture and design | Drafted (v0.2), awaiting faculty sign-off |
-| 3 Fresh setup | Done: deployed on Vercel (Hobby), connected to Supabase and Clerk (development instance) |
-| 4 Database and seed | Migrations 0001-0005 run and seed loaded (20 employees); parity check of SQL vs TypeScript maths still to do |
-| Domain rules (working days, day status, Late, accrual, balance, LOP, validation, masking) | Done, 47 unit tests pass in 4 time zones |
-| 5 Login and roles | Code written (Clerk -> employees by email, role from DB, access-denied); **not yet tested against live Clerk/Supabase** |
-| 6 Employee Master | Directory, multi-step add, profile tabs, masking, self-service edit, deactivate, Reveal, history; **not yet tested live** |
-| 7 Attendance | Check in/out/WFH, month calendar, regularisation request, team today, holiday settings; **not yet tested live** |
-| 8 Leave balances and apply | Balance cards (opening/accrued/used/pending/available), apply form with live working days, LOP conversion, certificate upload, cancel, optional holidays; SQL vs TypeScript parity verified (640 checks) |
-| 9 Approvals and email | Manager/HR inbox (leave and attendance corrections), approve/reject with comment, balance moves pending to used only on approval, clash warning, secure certificate link, team leave calendar, email queue with Brevo sender and daily retry cron. **Run migration 0006.** Emails send only once SMTP is configured |
-| 10 Reports | Month-end summary screen and CSV download (HR: everyone, manager: own team), no PAN/Aadhaar/bank columns, formula-injection safe. Totals verified against an independent day-by-day calendar walk for three employees. Seed now adds 45 days of sample attendance |
-| 11 HR assistant agent | Ask HR screen, 7 required tools + own tool `month_end_check`, role-filtered tools, 5-call cap, redaction, untrusted-text wrapping, agent_log, drafts confirmed by button. 14 unit tests; **20 of 20 attack/behaviour prompts pass** (`npm run agent:test`, needs migration 0007 and a Gemini key). Free AI tier is about 20 requests per day per model, so the agent falls back across 4 models |
-| 12 Test and polish | Not started |
+| # | Checkpoint | State |
+|---|---|---|
+| 1 | Research | Done. **§8, the interview, is a template to fill with a real conversation** |
+| 2 | Architecture and design | Written (v0.2) and reviewed in plan mode. **Faculty sign-off still to be recorded** |
+| 3 | Fresh setup | Done: Vercel (Hobby), Supabase, Clerk (development instance), Brevo email |
+| 4 | Database and seed | Done: migrations 0001–0007, seed (20 employees, 2 locations, holidays, 45 days sample attendance) |
+| 5 | Login and roles | Done and used live: Clerk → employee by email, role from the database, access-denied for inactive users |
+| 6 | Employee Master | Done: directory, 4-step add with Indian validation, tabs, masking, self-service edit, deactivate, Reveal, audit history |
+| 7 | Attendance | Done: IST check in/out/WFH, month calendar, regularisation, team view, holidays per location |
+| 8 | Leave balances and apply | Done: balances, pro-rating, working-day preview, LOP conversion, certificate upload, cancel |
+| 9 | Approvals and email | Done: inbox with clash warnings, decisions, secure certificate link, team leave calendar, email queue and daily retry |
+| 10 | Reports | Done: month-end summary and CSV, no sensitive columns |
+| 11 | HR assistant agent | Done: 7 required tools + `month_end_check`, guardrails, `agent_log`, **20/20 attack prompts pass** |
+| 12 | Test and polish | **43/43 automated checks pass**; 80 unit tests; manual list in docs/MANUAL-CHECKLIST.md to tick on the live site |
+
+### Evidence
+- `npm test`: 80 unit tests (rules, validation, masking, CSV, agent guardrails), also run under four laptop time zones.
+- `npm run checklist`: 43 checks against the real database and live site (constraints that must reject bad data, anonymous access, no secrets in git history, signed-out routes refused).
+- SQL and TypeScript leave maths compared on **640 cases** against the live database: 0 differences ([tests/db/parity.md](tests/db/parity.md)).
+- `npm run agent:test`: the 20 prompts (needs a Gemini key; the free tier allows about 20 requests per day per model).
 
 ## Setup
 ```bash
 npm install
 cp .env.example .env.local     # fill in values; never commit this file
-npm test                       # domain unit tests
+npm test                       # unit tests
 npm run lint                   # TypeScript check
-```
-### 1. Supabase
-1. Create a free project. Put `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (server-only; no `NEXT_PUBLIC_`).
-2. Run `supabase/migrations/0001` to `0007` in order (SQL editor or CLI).
-3. Authentication > Sign In / Providers > Third-party: add **Clerk** with your Clerk domain, so Supabase accepts Clerk session tokens.
-
-### 2. Clerk
-1. Create an application; put the publishable and secret keys in `.env.local`.
-2. Enable the Supabase integration (Clerk Dashboard > Integrations) so session tokens carry `role: authenticated`.
-3. Sessions > Customize session token, add the claim: `{"email": "{{user.primary_email_address}}"}`. The database links a first sign-in to its employee row by this verified email.
-4. Restrict sign-up (invite-only or allowlist). Create the seed users listed below.
-
-### 3. Seed and run
-```bash
-npm run seed     # needs SEED_EMAIL_BASE for usable logins; idempotent, never deletes
 npm run dev
 ```
 
+### 1. Supabase
+1. Create a free project. Put `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (server-only; no `NEXT_PUBLIC_`).
+2. Run `supabase/migrations/0001` to `0007` in order (SQL editor).
+3. Authentication → Sign In / Providers → Third-Party Auth → add **Clerk** with your Clerk domain.
+
+### 2. Clerk
+1. Create an application (Email sign-in); put the publishable and secret keys in `.env.local`. Copy the secret key with the **Copy** button: a key starting with `•` breaks login.
+2. Integrations → Supabase → activate (adds `role: authenticated`).
+3. Sessions → Customize session token: `{"role": "authenticated", "email": "{{user.primary_email_address}}"}`. The database links first sign-in to an employee by this verified email.
+4. Restrict sign-up (invite-only). Create the test users below.
+
+### 3. Seed
+```bash
+npm run seed     # set SEED_EMAIL_BASE first for usable logins; idempotent, never deletes
+```
+
+### 4. Email and AI (optional but used in the demo)
+- **Brevo** (free): SMTP settings and a verified sender go in `SMTP_*` and `EMAIL_FROM`; add `CRON_SECRET` (any long random string) and `APP_URL`.
+- **Gemini** (free): `GOOGLE_GENERATIVE_AI_API_KEY` from aistudio.google.com/apikey. `AI_MODEL` is optional (comma-separated list of models tried in order).
+- Add the same variables in Vercel and redeploy.
+
 ## Test logins
-Set `SEED_EMAIL_BASE=you@gmail.com` before seeding. Users are created with plus-addressing and must exist in Clerk (invite-only):
-`you+hr@gmail.com` (HR Admin), `you+mgr1@gmail.com`, `you+mgr2@gmail.com`, `you+mgr3@gmail.com` (managers), `you+emp1@gmail.com` ... `you+emp16@gmail.com` (employees). `emp16` joined on 1 July for pro-rating tests.
+With `SEED_EMAIL_BASE=you@gmail.com`, users are `you+<tag>@gmail.com` and must exist in Clerk:
 
-Testing approvals: Asha (`emp1`) reports to Savita (`mgr1`). Sign in as `emp1`, apply for leave, then sign in as `mgr1` and approve it. HR's own leave needs a second HR Admin to decide it (nobody decides their own request), so use employee requests for the demo.
+| Role | Email tag | Person |
+|---|---|---|
+| HR Admin | `+hr` | Rohan Kamat (KCF0001) |
+| Manager | `+mgr1` / `+mgr2` / `+mgr3` | Savita Desai (Panaji finance) / Anand Prabhu (Verna plant) / Neha Shirodkar (sales) |
+| Employee | `+emp1` … `+emp16` | `+emp1` Asha Naik reports to Savita; `+emp16` Aditi Joshi joined 1 July (pro-rating) |
 
-## Rules
-- All times are IST. Never commit secrets. Roles come from the database. See [CLAUDE.md](CLAUDE.md).
+Approvals test: sign in as `+emp1`, apply for leave, then as `+mgr1` approve it. HR's own leave needs a second HR Admin (nobody decides their own request).
+
+## Rules (short)
+All times IST · never commit secrets · roles come from the database · no direct table writes (every write is a role-checking database function) · Aadhaar is never shown in full. See [CLAUDE.md](CLAUDE.md).
