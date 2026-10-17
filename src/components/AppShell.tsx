@@ -8,6 +8,7 @@ export function navFor(s: { isHr: boolean; isManager: boolean }): NavItem[] {
     { href: '/attendance', label: 'Attendance' },
     { href: '/leave', label: 'Leave' },
     { href: '/leave/apply', label: 'Apply' },
+    { href: '/ask', label: 'Ask HR' },
     { href: '/profile', label: 'Profile' },
   ];
   if (s.isHr || s.isManager) items.push({ href: '/approvals', label: 'Approvals' }, { href: '/team', label: 'Team' }, { href: '/team/leave', label: 'Leave calendar' }, { href: '/reports', label: 'Reports' });
