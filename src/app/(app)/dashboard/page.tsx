@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Card, EmptyState, PageHeader } from '@/components/ui/Card';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { requireEmployee } from '@/lib/auth/session';
@@ -17,6 +18,11 @@ export default async function Dashboard() {
     balanceCards(s.db, e, Number(today.slice(0, 4)), today),
     s.isManager || s.isHr ? teamToday(s.db, s.isHr ? {} : { managerId: e.id }, today) : Promise.resolve(null),
   ]);
+
+  const pendingCount = s.isManager || s.isHr
+    ? ((await s.db.from('leave_requests').select('request_group_id', { count: 'exact', head: true }).eq('status', 'pending').neq('employee_id', e.id)).count ?? 0)
+      + ((await s.db.from('regularisation_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending').neq('employee_id', e.id)).count ?? 0)
+    : 0;
 
   const day = month.find((d) => d.date === today)!;
   const offDay = day.result.status === 'Holiday' || day.result.status === 'Weekly Off';
@@ -59,6 +65,14 @@ export default async function Dashboard() {
           )}
         </Card>
       </div>
+
+      {(s.isManager || s.isHr) && (
+        <Card title="Approvals">
+          {pendingCount === 0 ? <p className="hint">Nothing waiting for your approval.</p> : (
+            <p><Link className="btn btn-sm" href="/approvals">{pendingCount} request{pendingCount === 1 ? '' : 's'} waiting</Link></p>
+          )}
+        </Card>
+      )}
 
       {team && (
         <Card title={s.isHr ? 'Everyone today' : 'My team today'}>

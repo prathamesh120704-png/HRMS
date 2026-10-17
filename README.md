@@ -16,7 +16,8 @@ Read [RESEARCH.md](RESEARCH.md), [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.
 | 6 Employee Master | Directory, multi-step add, profile tabs, masking, self-service edit, deactivate, Reveal, history; **not yet tested live** |
 | 7 Attendance | Check in/out/WFH, month calendar, regularisation request, team today, holiday settings; **not yet tested live** |
 | 8 Leave balances and apply | Balance cards (opening/accrued/used/pending/available), apply form with live working days, LOP conversion, certificate upload, cancel, optional holidays; SQL vs TypeScript parity verified (640 checks) |
-| 9-12 Approvals and email, reports, agent | Not started |
+| 9 Approvals and email | Manager/HR inbox (leave and attendance corrections), approve/reject with comment, balance moves pending to used only on approval, clash warning, secure certificate link, team leave calendar, email queue with Brevo sender and daily retry cron. **Run migration 0006.** Emails send only once SMTP is configured |
+| 10-12 Reports, agent, test and polish | Not started |
 
 ## Setup
 ```bash
@@ -27,7 +28,7 @@ npm run lint                   # TypeScript check
 ```
 ### 1. Supabase
 1. Create a free project. Put `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (server-only; no `NEXT_PUBLIC_`).
-2. Run `supabase/migrations/0001` to `0005` in order (SQL editor or CLI).
+2. Run `supabase/migrations/0001` to `0006` in order (SQL editor or CLI).
 3. Authentication > Sign In / Providers > Third-party: add **Clerk** with your Clerk domain, so Supabase accepts Clerk session tokens.
 
 ### 2. Clerk
@@ -45,6 +46,8 @@ npm run dev
 ## Test logins
 Set `SEED_EMAIL_BASE=you@gmail.com` before seeding. Users are created with plus-addressing and must exist in Clerk (invite-only):
 `you+hr@gmail.com` (HR Admin), `you+mgr1@gmail.com`, `you+mgr2@gmail.com`, `you+mgr3@gmail.com` (managers), `you+emp1@gmail.com` ... `you+emp16@gmail.com` (employees). `emp16` joined on 1 July for pro-rating tests.
+
+Testing approvals: Asha (`emp1`) reports to Savita (`mgr1`). Sign in as `emp1`, apply for leave, then sign in as `mgr1` and approve it. HR's own leave needs a second HR Admin to decide it (nobody decides their own request), so use employee requests for the demo.
 
 ## Rules
 - All times are IST. Never commit secrets. Roles come from the database. See [CLAUDE.md](CLAUDE.md).

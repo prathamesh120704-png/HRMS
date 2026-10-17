@@ -10,7 +10,7 @@ export function navFor(s: { isHr: boolean; isManager: boolean }): NavItem[] {
     { href: '/leave/apply', label: 'Apply' },
     { href: '/profile', label: 'Profile' },
   ];
-  if (s.isHr || s.isManager) items.push({ href: '/team', label: 'Team' });
+  if (s.isHr || s.isManager) items.push({ href: '/approvals', label: 'Approvals' }, { href: '/team', label: 'Team' }, { href: '/team/leave', label: 'Leave calendar' });
   if (s.isHr) items.push({ href: '/employees', label: 'Employees' }, { href: '/settings', label: 'Settings' });
   return items;
 }
@@ -20,6 +20,8 @@ export function AppShell({ fullName, employeeCode, isHr, isManager, children }: 
   fullName: string; employeeCode: string; isHr: boolean; isManager: boolean; children: React.ReactNode;
 }) {
   const items = navFor({ isHr, isManager });
+  // The phone bar has room for five: approvers swap Profile for Approvals.
+  const phone = (isHr || isManager ? items.filter((i) => ['/dashboard', '/attendance', '/leave', '/leave/apply', '/approvals'].includes(i.href)) : items.slice(0, 5));
   const role = isHr ? 'HR Admin' : isManager ? 'Manager' : 'Employee';
   return (
     <div className="shell">
@@ -35,7 +37,7 @@ export function AppShell({ fullName, employeeCode, isHr, isManager, children }: 
         </div>
       </aside>
       <main id="main">{children}</main>
-      <NavLinks items={items.slice(0, 5)} variant="bottom" />
+      <NavLinks items={phone} variant="bottom" />
     </div>
   );
 }
