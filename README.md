@@ -14,7 +14,7 @@ Indian HR rules throughout: PAN, Aadhaar, UAN and IFSC validation, IST everywher
 | [CLAUDE.md](CLAUDE.md) | Rules for Claude Code in this repo, plus lessons learned |
 | [VIVA.md](VIVA.md) | Every rule: where it lives and why |
 | [DEMO.md](DEMO.md) | The 5–7 minute demo script |
-| [docs/TEST-REPORT.md](docs/TEST-REPORT.md) | Automated checklist results (43 checks) |
+| [docs/TEST-REPORT.md](docs/TEST-REPORT.md) | Automated checklist results (50 checks) |
 | [docs/MANUAL-CHECKLIST.md](docs/MANUAL-CHECKLIST.md) | Checklist items that need a signed-in browser |
 | [docs/INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) | How to run and write up the §8 interview in 15 minutes |
 | [docs/FACULTY-REVIEW.md](docs/FACULTY-REVIEW.md) | The 20-minute sign-off meeting pack: agenda, 10 decisions, sign-off record |
@@ -34,11 +34,11 @@ Indian HR rules throughout: PAN, Aadhaar, UAN and IFSC validation, IST everywher
 | 9 | Approvals and email | Done: inbox with clash warnings, decisions, secure certificate link, team leave calendar, email queue and daily retry |
 | 10 | Reports | Done: month-end summary and CSV, no sensitive columns |
 | 11 | HR assistant agent | Done: 7 required tools + `month_end_check`, guardrails, `agent_log`, **20/20 attack prompts pass** |
-| 12 | Test and polish | **43/43 automated checks pass**; 80 unit tests; manual list in docs/MANUAL-CHECKLIST.md to tick on the live site |
+| 12 | Test and polish | **50/50 automated checks pass**; 90 unit tests; manual list in docs/MANUAL-CHECKLIST.md to tick on the live site |
 
 ### Evidence
-- `npm test`: 80 unit tests (rules, validation, masking, CSV, agent guardrails), also run under four laptop time zones.
-- `npm run checklist`: 43 checks against the real database and live site (constraints that must reject bad data, anonymous access, no secrets in git history, signed-out routes refused).
+- `npm test`: 90 unit tests (rules, validation, masking, CSV, agent guardrails), also run under four laptop time zones.
+- `npm run checklist`: 50 checks against the real database and live site (constraints that must reject bad data, anonymous access, no secrets in git history, signed-out routes refused).
 - SQL and TypeScript leave maths compared on **640 cases** against the live database: 0 differences ([tests/db/parity.md](tests/db/parity.md)).
 - `npm run agent:test`: the 20 prompts (needs a Gemini key; the free tier allows about 20 requests per day per model).
 

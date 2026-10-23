@@ -189,7 +189,7 @@ async function main() {
     '# Automated test report', '',
     `Run: ${stamp} IST · Live site: ${LIVE} · **${rows.length - failed.length} of ${rows.length} checks passed**${failed.length ? `, ${failed.length} FAILED` : ''}`, '',
     'These are the checklist items that can be proven without a person signed in through Clerk. Rule checks are attempts the database must reject (nothing is written).',
-    'Business rules are also covered by the unit tests (`npm test`, 80 tests) and by the 640-case SQL-vs-TypeScript comparison. Items that need a signed-in browser are in [MANUAL-CHECKLIST.md](MANUAL-CHECKLIST.md).', '',
+    'Business rules are also covered by the unit tests (`npm test`, 90 tests) and by the 640-case SQL-vs-TypeScript comparison. Items that need a signed-in browser are in [MANUAL-CHECKLIST.md](MANUAL-CHECKLIST.md).', '',
     ...areas.flatMap((a) => [
       `## ${a}`, '', '| Result | Check | How it is proven | Detail |', '|---|---|---|---|',
       ...rows.filter((r) => r.area === a).map((r) => `| ${r.ok ? '✅ pass' : '❌ FAIL'} | ${r.item} | ${r.how} | ${(r.detail ?? '').replace(/\|/g, '/')} |`), '',

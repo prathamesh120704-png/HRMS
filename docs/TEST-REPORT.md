@@ -1,9 +1,9 @@
 # Automated test report
 
-Run: 23 Oct 2026, 9:35 pm IST · Live site: https://hrms-pi-three.vercel.app · **47 of 49 checks passed**, 2 FAILED
+Run: 23 Oct 2026, 10:49 pm IST · Live site: https://hrms-pi-three.vercel.app · **50 of 50 checks passed**
 
 These are the checklist items that can be proven without a person signed in through Clerk. Rule checks are attempts the database must reject (nothing is written).
-Business rules are also covered by the unit tests (`npm test`, 80 tests) and by the 640-case SQL-vs-TypeScript comparison. Items that need a signed-in browser are in [MANUAL-CHECKLIST.md](MANUAL-CHECKLIST.md).
+Business rules are also covered by the unit tests (`npm test`, 90 tests) and by the 640-case SQL-vs-TypeScript comparison. Items that need a signed-in browser are in [MANUAL-CHECKLIST.md](MANUAL-CHECKLIST.md).
 
 ## Employee Master
 
@@ -20,7 +20,7 @@ Business rules are also covered by the unit tests (`npm test`, 80 tests) and by 
 | ✅ pass | An employee cannot report to themselves | loop trigger and check constraint (either rejects it) | P0001 Reporting loop: 1d99b5ef-9cf2-41c3-91e0-9ed9f4281769 cannot report to someone in their own |
 | ✅ pass | Aadhaar is never shown in full (UI, CSV, agent) | code audit: the only query that selects it is masked on the spot; HR Reveal has no Aadhaar branch; CSV and agent have no such field (unit-tested) | selected only in: src/modules/employees/queries.ts |
 | ✅ pass | A non-HR user opening /employees/<id> gets a 404 | code audit of the page guard (manual URL test also listed) |  |
-| ✅ pass | The audit trail has recorded changes | audit_log rows exist (trigger fires on job/statutory edits) | 19 rows. If 0: change a designation in the app, then re-run |
+| ✅ pass | The audit trail has recorded changes | audit_log rows exist (trigger fires on job/statutory edits) | 21 rows. If 0: change a designation in the app, then re-run |
 
 ## Attendance
 
@@ -34,7 +34,8 @@ Business rules are also covered by the unit tests (`npm test`, 80 tests) and by 
 
 | Result | Check | How it is proven | Detail |
 |---|---|---|---|
-| ✅ pass | An employee who joined on 1 July sees pro-rated CL 4 and SL 3.5 | leave_accrued() in the database | Aditi Joshi: CL 4, SL 3.5 |
+| ✅ pass | An employee who joined on 1 July is pro-rated to half the year (to the nearest 0.5), as configured | leave_accrued() in the database equals the TypeScript rule for the current quotas | Aditi Joshi: CL 4 of 8, SL 3.5 of 7 |
+| ✅ pass | Leave types still match the company policy written in RESEARCH.md (restore them in Settings after any test edit) | read of leave_types against the policy table | CL 8, SL 7, EL 15 (carry 30), ML 182, PL 5, LOP unpaid |
 | ✅ pass | Friday to Monday at head office counts 2 days, not 4 | leave_count_days() in the database | 2 day(s) |
 | ✅ pass | The same dates at the plant count 3 (Saturday is a working day) | leave_count_days() in the database | 3 day(s) |
 | ✅ pass | A person cannot be the approver of their own leave | check constraint leave_not_self_approved | 23514 new row for relation "leave_requests" violates check constraint "leave_not_self_approved" |
@@ -49,8 +50,8 @@ Business rules are also covered by the unit tests (`npm test`, 80 tests) and by 
 | ✅ pass | A negative quota is rejected | check constraint on leave_types.annual_quota | 23514 new row for relation "leave_types" violates check constraint "leave_types_annual_quota_che |
 | ✅ pass | An unknown accrual method is rejected | check constraint on leave_types.accrual_method | 23514 new row for relation "leave_types" violates check constraint "leave_types_accrual_method_c |
 | ✅ pass | A second leave type with an existing code is rejected | unique constraint on leave_types.code | 23505 duplicate key value violates unique constraint "leave_types_code_key" |
-| ❌ FAIL | Anonymous visitors cannot edit a leave type | EXECUTE revoked from anon (fails with "not found" if migration 0008 has not been run) | PGRST202 Could not find the function public.hr_update_leave_type(p_accrual_method, p_annual_quota,  |
-| ❌ FAIL | Anonymous visitors cannot add a leave type | EXECUTE revoked from anon | PGRST202 Could not find the function public.hr_add_leave_type(p_accrual_method, p_annual_quota, p_c |
+| ✅ pass | Anonymous visitors cannot edit a leave type | EXECUTE revoked from anon (fails with "not found" if migration 0008 has not been run) | 42501 permission denied for function hr_update_leave_type |
+| ✅ pass | Anonymous visitors cannot add a leave type | EXECUTE revoked from anon | 42501 permission denied for function hr_add_leave_type |
 | ✅ pass | Loss of Pay still has no quota and never accrues | read of leave_types (the function refuses any change to it) |  |
 
 ## Security

@@ -38,7 +38,7 @@ Submit 1 day of CL: **My leave** shows Pending 1 and Available already down by 1
 "20 attack prompts, all pass; every tool call is in `agent_log`."
 
 **6:30 – 7:00 · Close**
-"Three documents written before any code: RESEARCH, ARCHITECTURE, DESIGN. The decision log shows where I changed my mind. 80 unit tests, 43 automated checks against the live database, and the SQL and TypeScript rules agree on 640 cases." Offer the viva.
+"Three documents written before any code: RESEARCH, ARCHITECTURE, DESIGN. The decision log shows where I changed my mind. 90 unit tests, 50 automated checks against the live database, and the SQL and TypeScript rules agree on 640 cases." Offer the viva.
 
 ## If something goes wrong
 | Problem | What to do |
