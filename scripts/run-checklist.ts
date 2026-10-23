@@ -9,6 +9,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
+import { proratedQuota } from '../src/lib/domain/accrual';
 
 const url = process.env.SUPABASE_URL!;
 const db = createClient(url, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
@@ -87,7 +88,25 @@ async function main() {
   const { data: types } = await db.from('leave_types').select('id, code');
   const T = Object.fromEntries((types ?? []).map((t: { id: string; code: string }) => [t.code, t.id]));
   const accrual = async (code: string) => Number((await db.rpc('leave_accrued', { p_emp: aditi.id, p_type: T[code], p_year: 2026, p_as_of: '2026-12-31' })).data);
-  add('Leave', 'An employee who joined on 1 July sees pro-rated CL 4 and SL 3.5', 'leave_accrued() in the database', aditi.date_of_joining === '2026-07-01' && (await accrual('CL')) === 4 && (await accrual('SL')) === 3.5, `${aditi.full_name}: CL ${await accrual('CL')}, SL ${await accrual('SL')}`);
+  // The quotas are now configurable by HR (L1), so the maths is checked against whatever is configured: the database
+  // function must equal the TypeScript rule for the CURRENT quota (a 1 July joiner gets 6/12 of it, to the nearest 0.5).
+  const { data: quotaRows } = await db.from('leave_types').select('code, annual_quota').in('code', ['CL', 'SL']);
+  const quota = Object.fromEntries((quotaRows ?? []).map((q: { code: string; annual_quota: number }) => [q.code, Number(q.annual_quota)]));
+  const [sqlCL, sqlSL] = [await accrual('CL'), await accrual('SL')];
+  const [tsCL, tsSL] = [proratedQuota(quota.CL, aditi.date_of_joining, 2026), proratedQuota(quota.SL, aditi.date_of_joining, 2026)];
+  add('Leave', 'An employee who joined on 1 July is pro-rated to half the year (to the nearest 0.5), as configured',
+    'leave_accrued() in the database equals the TypeScript rule for the current quotas', aditi.date_of_joining === '2026-07-01' && sqlCL === tsCL && sqlSL === tsSL,
+    `${aditi.full_name}: CL ${sqlCL} of ${quota.CL}, SL ${sqlSL} of ${quota.SL}`);
+  // Integrity check against the written policy (RESEARCH.md section 11): CL 8, SL 7, EL 15 (carry 30), ML 182, PL 5.
+  const { data: polRows } = await db.from('leave_types').select('code, annual_quota, accrual_method, carry_forward_max');
+  const policy: Record<string, [number, string, number]> = { CL: [8, 'upfront', 0], SL: [7, 'upfront', 0], EL: [15, 'monthly', 30], ML: [182, 'on_request', 0], PL: [5, 'on_request', 0], LOP: [0, 'none', 0] };
+  const drift = (polRows ?? []).flatMap((r: { code: string; annual_quota: number; accrual_method: string; carry_forward_max: number }) => {
+    const p = policy[r.code];
+    return p && (Number(r.annual_quota) !== p[0] || r.accrual_method !== p[1] || Number(r.carry_forward_max) !== p[2])
+      ? [`${r.code} is ${Number(r.annual_quota)}/${r.accrual_method}/carry ${Number(r.carry_forward_max)}, policy says ${p[0]}/${p[1]}/carry ${p[2]}`] : [];
+  });
+  add('Leave', 'Leave types still match the company policy written in RESEARCH.md (restore them in Settings after any test edit)',
+    'read of leave_types against the policy table', drift.length === 0, drift.join('; ') || 'CL 8, SL 7, EL 15 (carry 30), ML 182, PL 5, LOP unpaid');
   const days = async (emp: string, a: string, b: string) => Number((await db.rpc('leave_count_days', { p_emp: emp, p_from: a, p_to: b, p_half: false, p_calendar: false })).data);
   const fm = await days(asha.id, '2026-10-23', '2026-10-26');
   add('Leave', 'Friday to Monday at head office counts 2 days, not 4', 'leave_count_days() in the database', fm === 2, `${fm} day(s)`);
