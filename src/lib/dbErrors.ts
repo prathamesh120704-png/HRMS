@@ -9,6 +9,8 @@ interface PgError { message: string; code?: string }
 export function friendlyDbError(e: PgError): string {
   const m = e.message ?? '';
   if (e.code === '42501') return 'You are not allowed to do that.';
+  // PostgREST says "function not found" when the app is newer than the database (a migration has not been run).
+  if (e.code === 'PGRST202') return 'This feature needs a database update that has not been applied yet. Ask the administrator to run the latest migration.';
   if (e.code === '23505') {
     if (m.includes('email')) return 'An employee with this email already exists.';
     if (m.includes('leave_no_overlap')) return 'You already have leave on some of these dates.';

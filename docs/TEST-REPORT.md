@@ -1,6 +1,6 @@
 # Automated test report
 
-Run: 17 Oct 2026, 11:40 pm IST · Live site: https://hrms-pi-three.vercel.app · **43 of 43 checks passed**
+Run: 23 Oct 2026, 9:35 pm IST · Live site: https://hrms-pi-three.vercel.app · **47 of 49 checks passed**, 2 FAILED
 
 These are the checklist items that can be proven without a person signed in through Clerk. Rule checks are attempts the database must reject (nothing is written).
 Business rules are also covered by the unit tests (`npm test`, 80 tests) and by the 640-case SQL-vs-TypeScript comparison. Items that need a signed-in browser are in [MANUAL-CHECKLIST.md](MANUAL-CHECKLIST.md).
@@ -9,7 +9,7 @@ Business rules are also covered by the unit tests (`npm test`, 80 tests) and by 
 
 | Result | Check | How it is proven | Detail |
 |---|---|---|---|
-| ✅ pass | Codes are generated (KCFnnnn) and unique | database sequence + unique constraint | 20 employees |
+| ✅ pass | Codes are generated (KCFnnnn) and unique | database sequence + unique constraint | 21 employees |
 | ✅ pass | An employee code can never be changed | immutability trigger | P0001 employee_code cannot be changed |
 | ✅ pass | Invalid PAN (ABC123) is rejected | check constraint on employee_statutory.pan | 23514 new row for relation "employee_statutory" violates check constraint "employee_statutory_pa |
 | ✅ pass | Invalid IFSC is rejected | check constraint on employee_bank.ifsc | 23514 new row for relation "employee_bank" violates check constraint "employee_bank_ifsc_check" |
@@ -41,6 +41,17 @@ Business rules are also covered by the unit tests (`npm test`, 80 tests) and by 
 | ✅ pass | Two live requests for the same dates are rejected | exclusion constraint leave_no_overlap | 23P01 conflicting key value violates exclusion constraint "leave_no_overlap" |
 | ✅ pass | Leave more than 30 days in the past is rejected | check constraint leave_max_30_days_back | 23514 new row for relation "leave_requests" violates check constraint "leave_max_30_days_back" |
 | ✅ pass | A half day over several dates is rejected | check constraint leave_half_day_single | 23514 new row for relation "leave_requests" violates check constraint "leave_half_day_single" |
+
+## Leave types (L1)
+
+| Result | Check | How it is proven | Detail |
+|---|---|---|---|
+| ✅ pass | A negative quota is rejected | check constraint on leave_types.annual_quota | 23514 new row for relation "leave_types" violates check constraint "leave_types_annual_quota_che |
+| ✅ pass | An unknown accrual method is rejected | check constraint on leave_types.accrual_method | 23514 new row for relation "leave_types" violates check constraint "leave_types_accrual_method_c |
+| ✅ pass | A second leave type with an existing code is rejected | unique constraint on leave_types.code | 23505 duplicate key value violates unique constraint "leave_types_code_key" |
+| ❌ FAIL | Anonymous visitors cannot edit a leave type | EXECUTE revoked from anon (fails with "not found" if migration 0008 has not been run) | PGRST202 Could not find the function public.hr_update_leave_type(p_accrual_method, p_annual_quota,  |
+| ❌ FAIL | Anonymous visitors cannot add a leave type | EXECUTE revoked from anon | PGRST202 Could not find the function public.hr_add_leave_type(p_accrual_method, p_annual_quota, p_c |
+| ✅ pass | Loss of Pay still has no quota and never accrues | read of leave_types (the function refuses any change to it) |  |
 
 ## Security
 
@@ -74,6 +85,6 @@ Business rules are also covered by the unit tests (`npm test`, 80 tests) and by 
 
 | Result | Check | How it is proven | Detail |
 |---|---|---|---|
-| ✅ pass | No question ever used more than 5 tool calls | agent_log grouped by question | 23 logged questions, 23 tool calls, max 1 per question |
+| ✅ pass | No question ever used more than 5 tool calls | agent_log grouped by question | 25 logged questions, 25 tool calls, max 1 per question |
 | ✅ pass | The 20 attack/behaviour prompts pass | tests/agent/prompts.md run on 2026-10-17 (re-run with npm run agent:test) | result recorded in prompts.md |
 | ✅ pass | Drafts exist but were never auto-submitted | drafts stay "draft" until a person presses Confirm | 2 drafts |

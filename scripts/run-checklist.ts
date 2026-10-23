@@ -102,6 +102,18 @@ async function main() {
   await mustFail('Leave', 'Leave more than 30 days in the past is rejected', 'check constraint leave_max_30_days_back', () => db.from('leave_requests').insert({ employee_id: asha.id, leave_type_id: T.CL, from_date: old, to_date: old, days: 1, reason: 'too old' }), { code: '23514' });
   await mustFail('Leave', 'A half day over several dates is rejected', 'check constraint leave_half_day_single', () => db.from('leave_requests').insert({ employee_id: asha.id, leave_type_id: T.CL, from_date: '2026-11-02', to_date: '2026-11-03', is_half_day: true, days: 0.5, reason: 'bad half' }), { code: '23514' });
 
+  // L1: HR configures leave types. The database refuses nonsense even if the form is bypassed.
+  await mustFail('Leave types (L1)', 'A negative quota is rejected', 'check constraint on leave_types.annual_quota', () => db.from('leave_types').update({ annual_quota: -1 }).eq('code', 'CL'), { code: '23514' });
+  await mustFail('Leave types (L1)', 'An unknown accrual method is rejected', 'check constraint on leave_types.accrual_method', () => db.from('leave_types').update({ accrual_method: 'weekly' }).eq('code', 'CL'), { code: '23514' });
+  await mustFail('Leave types (L1)', 'A second leave type with an existing code is rejected', 'unique constraint on leave_types.code', () => db.from('leave_types').insert({ code: 'CL', name: 'Duplicate', annual_quota: 1, accrual_method: 'upfront' }), { code: '23505' });
+  await mustFail('Leave types (L1)', 'Anonymous visitors cannot edit a leave type', 'EXECUTE revoked from anon (fails with "not found" if migration 0008 has not been run)',
+    () => anon.rpc('hr_update_leave_type', { p_id: T.CL, p_name: 'Hacked', p_annual_quota: 99, p_accrual_method: 'upfront', p_carry_forward_max: 0, p_half_day_allowed: true }), { code: '42501' });
+  await mustFail('Leave types (L1)', 'Anonymous visitors cannot add a leave type', 'EXECUTE revoked from anon',
+    () => anon.rpc('hr_add_leave_type', { p_code: 'ZZ', p_name: 'Hacked', p_annual_quota: 1, p_accrual_method: 'upfront', p_carry_forward_max: 0, p_half_day_allowed: true }), { code: '42501' });
+  const { data: cfg } = await db.from('leave_types').select('code, annual_quota, accrual_method, carry_forward_max').in('code', ['LOP', 'EL']);
+  const lop = (cfg ?? []).find((c: { code: string }) => c.code === 'LOP') as { annual_quota: number; accrual_method: string; carry_forward_max: number } | undefined;
+  add('Leave types (L1)', 'Loss of Pay still has no quota and never accrues', 'read of leave_types (the function refuses any change to it)', !!lop && lop.accrual_method === 'none' && Number(lop.annual_quota) === 0 && Number(lop.carry_forward_max) === 0);
+
   // ---------------------------------------------------------------- Security
   for (const t of ['employees', 'employee_statutory', 'employee_bank', 'leave_requests', 'attendance', 'agent_log']) {
     const r = await anon.from(t).select('*').limit(1);

@@ -54,14 +54,17 @@ async function main() {
   }) => ({
     carry_forward_max: 0, requires_certificate_after_days: null, eligible_gender: 'any', counts_calendar_days: false, ...o,
   });
-  const types = must(await db.from('leave_types').upsert([
+  must(await db.from("leave_types").upsert([
     lt({ code: 'CL', name: 'Casual Leave', annual_quota: 8, accrual_method: 'upfront', half_day_allowed: true }),
     lt({ code: 'SL', name: 'Sick Leave', annual_quota: 7, accrual_method: 'upfront', half_day_allowed: true, requires_certificate_after_days: 2 }),
     lt({ code: 'EL', name: 'Earned Leave', annual_quota: 15, accrual_method: 'monthly', carry_forward_max: 30, half_day_allowed: false }),
     lt({ code: 'ML', name: 'Maternity Leave', annual_quota: 182, accrual_method: 'on_request', half_day_allowed: false, eligible_gender: 'female', counts_calendar_days: true }),
     lt({ code: 'PL', name: 'Paternity Leave', annual_quota: 5, accrual_method: 'on_request', half_day_allowed: false, eligible_gender: 'male', counts_calendar_days: true }),
     lt({ code: 'LOP', name: 'Loss of Pay', annual_quota: 0, accrual_method: 'none', half_day_allowed: true }),
-  ], { onConflict: 'code' }).select(), 'leave_types');
+  ], { onConflict: 'code', ignoreDuplicates: true }).select(), 'leave_types');
+  // Insert-only: once HR has changed a leave type in Settings (L1), re-running the seed must NOT put the old values back.
+  // With ignoreDuplicates the call returns only the rows it inserted, so read all of them afterwards.
+  const typesAll = must(await db.from('leave_types').select('*'), 'leave_types (read)');
 
   const d = (m: number, day: number) => `${year}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   const nat = (loc: string) => [
@@ -158,10 +161,11 @@ A missed punch can be corrected by a regularisation request within 30 days, appr
     must(await db.from('employee_bank').upsert({
       employee_id: id, account_number: String(50100000000000 + i * 31337).slice(0, 14), ifsc: 'HDFC0001234', bank_name: 'HDFC Bank',
     }).select(), `bank ${s.tag}`);
-    for (const t of types) {
+    for (const t of typesAll) {
       must(await db.from('leave_balances').upsert(
         { employee_id: id, leave_type_id: t.id, year, opening: t.code === 'EL' && i % 4 === 0 ? 5 : 0, adjustment: 0 },
-        { onConflict: 'employee_id,leave_type_id,year' }).select(), `balance ${s.tag}/${t.code}`);
+        // Insert-only: never overwrite an opening balance or an HR adjustment that already exists.
+        { onConflict: 'employee_id,leave_type_id,year', ignoreDuplicates: true }).select(), `balance ${s.tag}/${t.code}`);
     }
   }
   // ---- sample attendance for the last 45 days, so reports and calendars have something to show.

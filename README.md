@@ -26,7 +26,7 @@ Indian HR rules throughout: PAN, Aadhaar, UAN and IFSC validation, IST everywher
 | 1 | Research | Done: all 8 questions, the interview (23 Oct 2026), desk research, rules R1 to R35. **Still to check against official sources:** Maternity Act figures and which Goa Act applies |
 | 2 | Architecture and design | Written (v0.2) and reviewed in plan mode. **Faculty sign-off still to be recorded** |
 | 3 | Fresh setup | Done: Vercel (Hobby), Supabase, Clerk (development instance), Brevo email |
-| 4 | Database and seed | Done: migrations 0001–0007, seed (20 employees, 2 locations, holidays, 45 days sample attendance) |
+| 4 | Database and seed | Done: migrations 0001–0008, seed (20 employees, 2 locations, holidays, 45 days sample attendance) |
 | 5 | Login and roles | Done and used live: Clerk → employee by email, role from the database, access-denied for inactive users |
 | 6 | Employee Master | Done: directory, 4-step add with Indian validation, tabs, masking, self-service edit, deactivate, Reveal, audit history |
 | 7 | Attendance | Done: IST check in/out/WFH, month calendar, regularisation, team view, holidays per location |
@@ -53,7 +53,7 @@ npm run dev
 
 ### 1. Supabase
 1. Create a free project. Put `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (server-only; no `NEXT_PUBLIC_`).
-2. Run `supabase/migrations/0001` to `0007` in order (SQL editor).
+2. Run `supabase/migrations/0001` to `0008` in order (SQL editor).
 3. Authentication → Sign In / Providers → Third-Party Auth → add **Clerk** with your Clerk domain.
 
 ### 2. Clerk

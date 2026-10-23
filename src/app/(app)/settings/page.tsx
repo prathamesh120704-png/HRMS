@@ -3,8 +3,15 @@ import { Pill } from '@/components/ui/StatusBadge';
 import { requireHr } from '@/lib/auth/session';
 import { formatDateIST, todayIST } from '@/lib/time/ist';
 import { referenceData } from '@/modules/employees/queries';
+import { ACCRUAL_LABEL, type AccrualMethod } from '@/lib/validation/leaveType';
 import { deleteHolidayAction } from '@/modules/settings/actions';
 import { HolidayForm } from '@/modules/settings/HolidayForm';
+import { LeaveTypeForm } from '@/modules/settings/LeaveTypeForm';
+
+interface LeaveTypeRow {
+  id: string; code: string; name: string; annual_quota: number; accrual_method: AccrualMethod; carry_forward_max: number;
+  half_day_allowed: boolean; requires_certificate_after_days: number | null; eligible_gender: string; counts_calendar_days: boolean;
+}
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -20,6 +27,11 @@ export default async function Settings({ searchParams }: { searchParams: Promise
   const { data } = await q;
   const holidays = (data ?? []) as unknown as { id: string; date: string; name: string; type: string; locations: { name: string } | { name: string }[] | null }[];
 
+  const { data: lt } = await s.db.from('leave_types')
+    .select('id, code, name, annual_quota, accrual_method, carry_forward_max, half_day_allowed, requires_certificate_after_days, eligible_gender, counts_calendar_days')
+    .order('code');
+  const leaveTypes = (lt ?? []) as LeaveTypeRow[];
+
   return (
     <>
       <PageHeader title="Settings" sub="Locations, departments and holidays" />
@@ -34,6 +46,37 @@ export default async function Settings({ searchParams }: { searchParams: Promise
           </tbody>
         </table>
         <p className="hint" style={{ marginTop: 8 }}>Departments: {departments.map((d) => d.name).join(', ')}</p>
+      </Card>
+
+      <Card title="Leave types">
+        <p className="hint" style={{ marginBottom: 12 }}>
+          Quota, how leave is earned, the carry-forward limit and whether half days are allowed. Balances are calculated live, so a change applies to
+          <strong> everyone straight away</strong> (including this year&apos;s accrual); leave already approved is not touched. Every change is recorded in the audit log.
+          Types are never deleted, because old requests and reports refer to them.
+        </p>
+        {leaveTypes.map((t) => (
+          <details key={t.id} style={{ borderBottom: '1px solid var(--line)', padding: '8px 0' }}>
+            <summary style={{ cursor: 'pointer', minHeight: 44, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <strong>{t.code}</strong> {t.name}
+              <span className="hint">
+                {t.accrual_method === 'none' ? 'unpaid, no quota' : `${Number(t.annual_quota)} days`} · {ACCRUAL_LABEL[t.accrual_method]}
+                {Number(t.carry_forward_max) > 0 && ` · carry forward up to ${Number(t.carry_forward_max)}`} · half day {t.half_day_allowed ? 'yes' : 'no'}
+              </span>
+            </summary>
+            <div style={{ padding: '12px 0 4px' }}>
+              <LeaveTypeForm mode="edit" type={{ id: t.id, code: t.code, name: t.name, annual_quota: Number(t.annual_quota), accrual_method: t.accrual_method, carry_forward_max: Number(t.carry_forward_max), half_day_allowed: t.half_day_allowed }} />
+              <p className="hint" style={{ marginTop: 8 }}>
+                Fixed for this type: {t.requires_certificate_after_days !== null ? `certificate needed after ${Number(t.requires_certificate_after_days)} days; ` : ''}
+                {t.eligible_gender !== 'any' ? `only for ${t.eligible_gender} employees; ` : ''}{t.counts_calendar_days ? 'counts calendar days; ' : 'counts working days only; '}
+                {t.code === 'LOP' ? 'Loss of Pay never accrues.' : ''}
+              </p>
+            </div>
+          </details>
+        ))}
+        <details style={{ padding: '8px 0' }}>
+          <summary style={{ cursor: 'pointer', minHeight: 44, display: 'flex', alignItems: 'center' }}><strong>+ Add a leave type</strong></summary>
+          <div style={{ padding: '12px 0 4px' }}><LeaveTypeForm mode="add" /></div>
+        </details>
       </Card>
 
       <Card title="Add a holiday">

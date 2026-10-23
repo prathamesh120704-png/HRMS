@@ -32,6 +32,7 @@ Use a separate browser profile or Incognito for the second person.
 - [ ] **Cancelling approved future leave restores balance.** As `+emp1`: cancel an approved request that has not started. Available goes back up.
 - [ ] **Emails.** Manager receives "New leave request from Asha Naik" and Asha receives the decision. (Needs the Brevo SMTP settings on Vercel; otherwise the rows wait in `email_log`.)
 - [ ] **A manager cannot approve their own leave.** As `+mgr1`: apply for leave. Open Approvals: your own request is not listed. (If you reach the decision some other way, the database refuses it.)
+- [ ] **HR configures a leave type (L1).** As `+hr`: Settings → Leave types → open **Casual Leave**, change the quota (for example 8 → 9) → Save: "Saved…". As `+emp1`, My leave shows the new quota in Available (one more day). Change it back to 8. Then try **Loss of Pay**: set a quota of 5 → Save: refused ("Loss of Pay has no quota…"). (Needs migration 0008.)
 - [ ] **CSV totals match the calendar.** As `+hr`: Reports → September → Download CSV. Compare three employees' Present/LOP/weekly offs with Attendance (automated version passed on three employees).
 
 ## HR assistant (Ask HR)

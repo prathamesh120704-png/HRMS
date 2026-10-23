@@ -481,7 +481,7 @@ The wireframes above are the plan. These are the honest differences, so the viva
 
 | Wireframe | What was built | Why / status |
 |---|---|---|
-| **2.12 Settings**: tabs for Locations, Departments, Holidays, **Leave types** | One page. Holidays can be added and deleted. Locations and departments are listed read-only. **Leave types are not shown or editable.** | **Gap against requirement L1** ("HR configures leave types"). Leave types are set by the seed. Fix needs a settings screen and an HR-only database function (the same pattern as holidays). Listed as a limitation |
+| **2.12 Settings**: tabs for Locations, Departments, Holidays, Leave types | One page with sections. **Leave types are editable** (quota, how earned, carry-forward limit, half days; add a new type; never delete) and holidays can be added and deleted. Locations and departments are listed read-only | Leave-type configuration (requirement L1) was added on 2026-10-23. Departments and locations stay seed-only |
 | **2.4 Add employee**: 5 steps ending in a Review step | 4 steps (Personal, Job, Statutory, Bank) and Save on the last step. No review screen | The form jumps back to the step with an error, which covers most of what a review step was for |
 | **2.1 Home**: "My pending requests" card with Cancel | Today, leave balance, and (managers) an Approvals count and team summary. Pending requests and Cancel live on **My leave** | Keeps the home screen to what is needed without clicking |
 | **2.6 Team attendance**: today's list **and a month grid** | Today's list only | Month view of one person is on My attendance; a team month grid was cut for time |

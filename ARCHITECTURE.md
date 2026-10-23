@@ -254,7 +254,7 @@ Tool descriptions are written as instructions to a colleague (what it does, when
 ├─ vercel.json  .env.example         # daily cron; blank values only
 ├─ supabase/
 │  ├─ migrations/                    # 0001 schema · 0002 write functions · 0003 RLS + storage · 0004 settings
-│  │                                 # 0005 service_role grants · 0006 harden balance functions · 0007 agent
+│  │                                 # 0005 service_role grants · 0006 harden balance functions · 0007 agent · 0008 leave types
 │  └─ seed.ts                        # 2 locations, 4 depts, 20 employees, holidays, leave types, policy text, sample attendance
 ├─ scripts/  run-checklist.ts  run-agent-prompts.ts      # real-database and live-model checks
 ├─ src/
@@ -328,7 +328,7 @@ Dated entries for every change from the plan, and the reason. (Sign-off with fac
 | 2026-10-17 | Month-end report counts through **yesterday** while the month is running. | Today is unfinished and would show everyone Absent (1 LOP each). | §6 |
 | 2026-10-17 | Seed adds 45 days of insert-only sample attendance. | Reports and calendars need data to show; `ignoreDuplicates` means real punches are never overwritten. | seed |
 | 2026-10-23 | Form-field borders use `--input-border` (#6B7280, 4.83:1) instead of `--line` (1.47:1). | The contrast check found field edges too faint (WCAG 1.4.11). See DESIGN.md §3.2. | DESIGN |
-| 2026-10-23 | **Known gap:** leave types, departments and locations are not editable in the app (only holidays are). | Requirement L1 says HR configures leave types; the seed sets them. Needs a Settings screen plus HR-only database functions (same pattern as holidays). See DESIGN.md §7. | §3, DESIGN |
+| 2026-10-23 | Migration **0008** adds `hr_update_leave_type` and `hr_add_leave_type` and an audit trigger on `leave_types`; Settings gets a Leave types section (requirement L1). Departments and locations are still read-only. The **seed is now insert-only** for leave types and balances. | L1 says HR configures quota, accrual method, carry-forward limit and half days. Same pattern as every write (HR-only function, role re-checked inside). Rules mirrored in `src/lib/validation/leaveType.ts` (10 tests): Loss of Pay can never get a quota, a "no accrual" or "on request" type cannot carry forward, code is 2-6 capitals and fixed for life. Balances are calculated live, so an edit applies to everyone at once; types are never deleted (history and reports refer to them). The seed used to reset leave types and balances on every run, which would have undone HR's changes | §3, §6, DESIGN §7 |
 
 ---
 
@@ -337,7 +337,7 @@ Dated entries for every change from the plan, and the reason. (Sign-off with fac
 1. May HR Reveal a full Aadhaar? The brief has a Reveal action, but R2 says Aadhaar is never shown unmasked, so the app never reveals Aadhaar at all (HR can reveal PAN and the bank account number, each logged).
 2. Confirm the LOP table (R24): an Absent day is 1 LOP and a Half Day is 0.5 present + 0.5 LOP. The brief reports "LOP days" but does not define them.
 3. Maternity leave: the app uses 182 calendar days (26 weeks) for the first two children and 84 days after, counted in calendar days (see RESEARCH.md §10 and R30).
-4. Leave types, departments and locations are not editable in the app (the known gap in §11). Is the seed-only setup acceptable, or should a Settings screen be added?
+4. Leave types are now configurable by HR (L1, migration 0008). **Departments and locations are still read-only** (set by the seed). Is that acceptable?
 5. Leave of an HR Admin can only be decided by another HR Admin or their manager; with the seed's single HR Admin and no manager, Rohan's own leave cannot be approved. Acceptable, or should the seed have a second HR Admin?
 
 **Resolved by testing:**
