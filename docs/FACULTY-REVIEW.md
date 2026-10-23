@@ -16,7 +16,7 @@ Links to open (the repo is public):
 > My HRMS project (Tarang, for Konkan Coastal Foods) is built and deployed. Could I book 20 minutes for the architecture and design review and sign-off?
 > I can do: **[slot 1]**, **[slot 2]** or **[slot 3]**.
 >
-> Documents (please skim before we meet): ARCHITECTURE.md, DESIGN.md and RESEARCH.md at https://github.com/prathamesh120704-png/HRMS ; live app https://hrms-pi-three.vercel.app
+> Documents (please skim before we meet): ARCHITECTURE.md, DESIGN.md and RESEARCH.md (the interview is in section 8) at https://github.com/prathamesh120704-png/HRMS ; live app https://hrms-pi-three.vercel.app
 >
 > I have 11 short decisions I need your view on (listed in docs/FACULTY-REVIEW.md in the repo), mainly the LOP definition, Aadhaar reveal, and maternity leave.
 >

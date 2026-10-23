@@ -3,7 +3,7 @@
 Author: Prathamesh
 Last updated: 2026-10-17
 
-> Status (2026-10-23): drafted from the requirement document, the primary legal text (Goa Shops and Establishments Act, 1973) and secondary sources. **Still to do by the author:** the interview in §8, and checking the Maternity Benefit Act figures and which Goa Act applies against official sources. Items marked **[TO CONFIRM]** or **[TO DO]** need your own check before submission. Re-read every answer and rephrase anything you cannot defend in the viva.
+> Status (2026-10-23): drafted from the requirement document, the primary legal text (Goa Shops and Establishments Act, 1973) and secondary sources. **Still to do by the author:** check the Maternity Benefit Act figures and which Goa Act applies against official sources, and confirm the open questions in §11 with faculty. (The interview in §8 was done on 23 October 2026.) Items marked **[TO CONFIRM]** or **[TO DO]** need your own check before submission. Re-read every answer and rephrase anything you cannot defend in the viva.
 
 ---
 
@@ -119,26 +119,38 @@ Common industry practice, and the rule used here:
 
 ## 8. Interview with a working professional
 
-**[TO DO: the author must do this; it has to be a real conversation, and the answers below must be what the person actually said.]**
-How to run it in 15 minutes, with the questions and a note sheet: [docs/INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md).
+*Interview done and written up by the author on 23 October 2026. The quotes are the interviewee's own words as noted during the call.*
 
-**Who** (role and industry; a first name or "a relative" is enough, with their permission):
-**Date, length, and how** (in person, phone):
-**The HR system they use** (name, or "Excel and email"):
+### 1. Who, date and format
+* **Interviewee:** A relative (Operations Executive at a company of about 220 employees in Goa, in manufacturing and distribution, with a corporate office and a plant on an industrial estate).
+* **Date:** 23 October 2026
+* **Format:** 15-minute phone call. Notes were taken live and summarised straight after.
 
-**What they told me** (their words, 4 to 6 lines; short quotes are good):
-1.
-2.
-3.
+### 2. What they told me
+At his company, employees use an older web-based HR portal to apply for leave, and a punch machine paired with the same portal to record daily attendance. To apply for leave he has to log in on a desktop browser, choose the dates and submit the form. He then still sends a WhatsApp message to his reporting manager, because the portal does not send clear alerts and approvals otherwise take two to three days.
 
-**What they dislike most** (wrong balances? slow approvals? hard on a phone? missed punches?):
+Leave balances are often confusing: *"It shows one single balance number, and I never know if the leave I applied for last week is already deducted from it or still pending until HR reconciles it at month-end."*
 
-**What surprised me** (something I had not thought of):
+If someone forgets to punch out, or works from home, the system automatically marks them Absent. Fixing it means emailing HR and waiting until the next payroll cycle to see whether it was corrected. The office works Monday to Friday and the factory Monday to Saturday, so employees are often unsure how many days will be deducted when they apply across a weekend.
 
-**What I changed or decided because of it** (each one should point at a rule, a screen, or a decision in ARCHITECTURE.md):
-| What I heard | What I did about it | Where |
+### 3. What they dislike most
+His biggest complaint is the lack of real-time clarity about leave balances and pending requests, together with having to chase managers on WhatsApp after already filling in a formal leave form. In his words: *"What makes me groan is that applying on the portal is only half the job. If I don't text my manager on WhatsApp, it just sits there in pending forever, and meanwhile I can't tell how many actual Casual Leaves I have left to use."*
+
+### 4. What surprised me
+I was surprised that even a company that pays for dedicated HR software still relies on WhatsApp messages to get leave approved and to know who is in the office today. I also did not expect employees to feel anxious about applying for Friday-to-Monday leave just because the form does not say upfront how many working days will be deducted before they press submit.
+
+### 5. What I changed or decided because of this
+
+| What I heard | What I did in my HRMS | Where |
 |---|---|---|
-| | | e.g. rule R15, the Apply screen, a decision-log entry |
+| **One balance number: is a pending request already taken off?** | **My leave** shows five numbers for every leave type: **Opening, Accrued, Used, Pending and Available**. Pending days are held at once, so Available already has them taken off, and Used changes **only when the manager approves**. The Home screen shows the Available balance per type, so the headline number is never inflated by a request that is still pending | L2, L4; rule R21 |
+| **Not knowing how many days a weekend or holiday will cost** | On **Apply leave**, choosing the dates immediately shows the exact **working days** and the **balance after**, before submitting. Weekly offs (Saturday and Sunday for Panaji, Sunday only for Verna) and holidays at the person's own location are left out, and there is no sandwich rule | L3; rules R17, R18 |
+| **Managers miss portal requests, so people chase on WhatsApp** | The manager's Home screen shows a **count of requests waiting** with a link to the **Approvals inbox**, and an **email** goes to the manager as soon as a request is submitted and to the employee as soon as it is decided | L6; Approvals inbox |
+| **Missed punches mean Absent and slow emails to HR** | A self-service **correction request**: on **My attendance**, below the calendar, the employee picks the missed day, enters the in and out times and a reason, and it goes straight to their manager, who approves from the inbox. Attendance changes only after approval | A5; rule R33 |
+| **Working from home marks the person Absent** | A **Work from home** button on the Home screen records the day and counts it as **Present** | A3; rule R13a |
+| **The portal is hard to use on a phone when someone is ill at home** | Phone layouts for **Check in, Apply leave and Ask HR**, with a bottom tab bar, so a person can check a balance, apply for leave, or ask the assistant in Hinglish from a phone browser without a laptop | Responsive requirement; Ask HR |
+
+**Where my app still falls short of what he asked for:** Tarang sends **emails**, not WhatsApp messages, and an email can also go unread, so the waiting-requests count on the manager's Home screen is the second reminder. A manager can only approve or reject a whole request, and a missed punch still needs a manager's approval.
 
 ## 8a. Desk research: what published sources say users dislike (not the interview)
 

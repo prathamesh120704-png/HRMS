@@ -23,7 +23,7 @@ Indian HR rules throughout: PAN, Aadhaar, UAN and IFSC validation, IST everywher
 ## Status
 | # | Checkpoint | State |
 |---|---|---|
-| 1 | Research | Done. **§8, the interview, is a template to fill with a real conversation** |
+| 1 | Research | Done: all 8 questions, the interview (23 Oct 2026), desk research, rules R1 to R35. **Still to check against official sources:** Maternity Act figures and which Goa Act applies |
 | 2 | Architecture and design | Written (v0.2) and reviewed in plan mode. **Faculty sign-off still to be recorded** |
 | 3 | Fresh setup | Done: Vercel (Hobby), Supabase, Clerk (development instance), Brevo email |
 | 4 | Database and seed | Done: migrations 0001–0007, seed (20 employees, 2 locations, holidays, 45 days sample attendance) |
