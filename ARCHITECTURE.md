@@ -1,10 +1,10 @@
 # ARCHITECTURE.md — Konkan Coastal Foods HRMS
 
-Status: **DRAFT v0.2 — not yet signed off** · Date: 2026-10-17
+Status: **v0.3, updated after the build (2026-10-23) · awaiting faculty sign-off** · first drafted 2026-10-17
 Business rules live in [RESEARCH.md](RESEARCH.md) (section 11, rules R1–R35). This file refers to them by number.
-v0.2 folds in the plan-mode review (see §13 for what changed and why).
+v0.2 folded in the plan-mode review (§13). v0.3 brings the stack, agent and folder sections in line with what was actually built and checked; every difference from the original plan is in the decision log (§11).
 
-> Ownership note: this is a first draft to review, challenge and rewrite in your own words. Every choice below needs a reason you can defend in the viva. Items marked **[VERIFY]** depend on a free-tier limit or behaviour you must check before sign-off.
+> Ownership note: review, challenge and rewrite this in your own words. Every choice needs a reason you can defend in the viva. The earlier **[VERIFY]** marks were resolved by testing the live app (see §11 and §12).
 
 ---
 
@@ -16,11 +16,11 @@ v0.2 folds in the plan-mode review (see §13 for what changed and why).
 | Hosting | **Vercel (Hobby)** | Free, deploys on push to GitHub, env vars UI, cron jobs | *Render free web service*: sleeps when idle and has slow cold starts |
 | Database | **Supabase Postgres** | Free tier, real Postgres constraints and triggers, row-level security (required by the brief) | *Firebase/Firestore*: no relational constraints (unique per employee per date, FK, check), weaker for reports |
 | Auth | **Clerk** | Free tier, handles sign-in/sessions; identity only, role stays in our DB (brief) | *Supabase Auth*: would work, but the brief wants role in our DB and Clerk is the default stack taught |
-| Email | **Brevo (SMTP, free tier) via nodemailer** **[VERIFY]** | Free daily quota; can send to any recipient from a verified sender | *Resend*: free plan only delivers to your own address until a domain is verified, which blocks demoing manager emails |
+| Email | **Brevo (SMTP, free tier) via nodemailer** (verified working: the manager and the employee both receive mail) | Free daily quota; can send to any recipient from a verified sender. Mail is queued in `email_log` first, so a send failure never fails a leave action | *Resend*: free plan only delivers to your own address until a domain is verified, which blocks demoing manager emails |
 | File storage | **Supabase Storage (private bucket `leave-certificates`)** | Medical certificates are health data; private bucket, 60-second signed URLs, storage policies mirror table RLS; same free project | *Public bucket or storing files in the DB*: leaks health data / bloats the free database |
-| AI model | **Google Gemini, Flash-tier model, free API tier**, via **Vercel AI SDK** **[VERIFY limits]** | Free tier, native tool calling, good Hinglish; SDK gives a tool loop with a step cap | *Groq (Llama)*: also free with tool calling; kept as fallback behind the same SDK interface |
+| AI model | **Google Gemini (free API tier), default `gemini-3.5-flash`** with three fallbacks, via **Vercel AI SDK 7** | Free tier, native tool calling, good Hinglish; SDK gives a tool loop with a step cap. Measured free limit is about **20 requests/day per model**, so a quota error moves to the next model (§7, §11) | *Groq (Llama)*: also free with tool calling; kept as fallback behind the same SDK interface |
 | Validation | **Zod** | One schema used on client form and server action | Hand-written regexes scattered in components |
-| Tests | **Vitest** (unit/domain), **Playwright** (a few end-to-end) | Domain rules are pure functions, so fast tests; checklist items become tests | Manual-only testing |
+| Tests | **Vitest** (80 unit tests), plus scripts that run against the real database and live site: `npm run checklist` (43 checks), `npm run agent:test` (20 prompts) | Domain rules are pure functions, so fast tests; rule checks that must be *rejected* by the database are run for real. **Playwright was planned and not used**: sign-in goes through Clerk emailed codes, so browser tests could not run unattended; those items are a manual checklist | Manual-only testing |
 | Language/runtime date lib | **date-fns + date-fns-tz** | Explicit `Asia/Kolkata` handling | Raw `Date` local getters (bugs when laptop/server TZ changes) |
 
 ---
@@ -208,7 +208,7 @@ All of the above have unit tests derived from the testing checklist before the f
 
 ## 7. AI agent
 
-**Model and library.** Gemini (Flash-tier free model) through Vercel AI SDK `generateText`/`streamText` with tools, `maxSteps = 5` (hard cap of 5 tool calls per question). **[VERIFY]** current free rate limits and record them in the decision log.
+**Model and library.** Google Gemini through Vercel AI SDK 7: `generateText` with tools and `stopWhen: isStepCount(7)`. The hard cap of **5 tool calls per question** is a counter inside the tool wrapper (the model cannot raise it); the step limit is a second safety net. Models are tried in order: `gemini-3.5-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3-flash-preview` (override with `AI_MODEL`, comma-separated). The free tier measured about 20 requests/day per model, so on a quota error the next model **continues from the tool calls and results already collected**; tools are never run twice. Each model call times out after 40 s with one retry. See §11 for what was tried and rejected.
 
 **Principle.** The model decides *which* tool and with *what inputs*. Tools are server functions that wrap the same services as the screens. The model never touches the database and never receives credentials.
 
@@ -250,35 +250,38 @@ Tool descriptions are written as instructions to a colleague (what it does, when
 
 ```
 /
-├─ ARCHITECTURE.md  DESIGN.md  RESEARCH.md  README.md  CLAUDE.md
-├─ .env.example                      # blank values only
+├─ RESEARCH.md  ARCHITECTURE.md  DESIGN.md  README.md  CLAUDE.md  VIVA.md  DEMO.md
+├─ vercel.json  .env.example         # daily cron; blank values only
 ├─ supabase/
-│  ├─ migrations/                    # tables, constraints, triggers, RLS, functions
-│  └─ seed.ts                        # 2 locations, 4 depts, 20 employees, holidays, balances
+│  ├─ migrations/                    # 0001 schema · 0002 write functions · 0003 RLS + storage · 0004 settings
+│  │                                 # 0005 service_role grants · 0006 harden balance functions · 0007 agent
+│  └─ seed.ts                        # 2 locations, 4 depts, 20 employees, holidays, leave types, policy text, sample attendance
+├─ scripts/  run-checklist.ts  run-agent-prompts.ts      # real-database and live-model checks
 ├─ src/
-│  ├─ app/                           # routes (thin: auth check → call service → render)
-│  │  ├─ (auth)/  sign-in, access-denied
-│  │  ├─ dashboard/  profile/  employees/  attendance/  leave/
-│  │  ├─ approvals/  reports/  ask-hr/  settings/
-│  │  └─ api/  cron/finalise-attendance, agent/chat
-│  ├─ modules/
-│  │  ├─ employees/   actions.ts  queries.ts  schema.ts  components/
-│  │  ├─ attendance/  …
-│  │  ├─ leave/       …
-│  │  ├─ reports/     …
-│  │  └─ agent/       tools/  prompt.ts  redact.ts  log.ts
+│  ├─ proxy.ts                       # Clerk: signed-out visitors go to sign-in (not an authorization check)
+│  ├─ app/                           # routes (thin: auth check → call module → render)
+│  │  ├─ sign-in/  access-denied/
+│  │  ├─ (app)/                      # everything behind sign-in: layout checks the employee
+│  │  │  dashboard/  profile/  employees/(new,[id])  attendance/  leave/(apply)  approvals/
+│  │  │  team/(leave)  reports/  ask/  settings/
+│  │  └─ api/  agent/  certificate/  cron/emails/  reports/month-end/
+│  ├─ modules/                       # actions.ts (writes), queries.ts (reads), forms
+│  │  ├─ employees/  attendance/  leave/  approvals/  reports/  settings/
+│  │  └─ agent/      tools.ts  guardrails.ts  run.ts  context.ts  actions.ts  AskHr.tsx
 │  ├─ lib/
-│  │  ├─ domain/      workingDays.ts  dayStatus.ts  balance.ts  accrual.ts  lateRules.ts   # pure, no I/O
-│  │  ├─ auth/        requireEmployee.ts  requireHrAdmin.ts  requireManagerOf.ts
-│  │  ├─ time/        ist.ts            # the only place that touches time zones
-│  │  ├─ db/          client.ts  serviceClient.ts (server-only)
-│  │  ├─ mask.ts      email/
-│  │  └─ validation/  indian.ts         # PAN, Aadhaar, UAN, IFSC, mobile, PIN regexes
-│  └─ components/ui/                    # Button, Card, Table, FormField, StatusBadge (per DESIGN.md)
-└─ tests/  domain/  api/  agent/  e2e/
+│  │  ├─ domain/     workingDays  dayStatus  lateRules  accrual  balance  leaveBalance  leaveRules
+│  │  │              monthSummary  clash  policySearch  reportingChain   # pure, no I/O
+│  │  ├─ auth/session.ts             # getSession, requireEmployee, requireHr, requireManagerOrHr
+│  │  ├─ time/ist.ts                 # the only place that touches time zones
+│  │  ├─ supabase/userClient.ts      # acts as the signed-in user (anon key + Clerk token, server-only)
+│  │  ├─ email/send.ts               # the one module that uses the service-role key at runtime (queue → SMTP)
+│  │  ├─ validation/indian.ts  mask.ts  csv.ts  dbErrors.ts  env.ts
+│  └─ components/  AppShell  NavLinks  Logo  ui/(Card, Field, StatusBadge, SubmitButton, statusStyles)
+├─ tests/  domain/ (unit)  agent/ (guardrail tests + prompt list)  db/ (SQL-vs-TypeScript parity)
+└─ docs/   TEST-REPORT.md  MANUAL-CHECKLIST.md  ui-preview.html
 ```
 
-Rules: `lib/domain` has no database or framework imports; `modules/*` may not import each other's internals; `serviceClient.ts` is imported only from seed, cron and email modules (lint rule).
+Rules: `lib/domain` has no database or framework imports. Modules may call each other's **`queries.ts`** read functions (for example approvals and the agent use the leave balance query, so every screen shows the same number) but never each other's forms or actions. The **service-role key** is used at runtime in exactly two places, `lib/email/send.ts` (and the cron route that calls it) and the `scripts/` and `supabase/seed.ts` tools; the browser and the AI model never see it. (The first plan had a `serviceClient.ts` and a lint rule; instead there is no shared service client at all, which is simpler to audit.)
 
 ---
 
@@ -308,24 +311,39 @@ Secondary risks to watch: free-tier limits (Gemini rate limits, Brevo daily quot
 
 ## 11. Decision log
 
-Dated entries for any change made **after sign-off**. Empty until sign-off.
+Dated entries for every change from the plan, and the reason. (Sign-off with faculty is still to come, so these are the changes since the first draft; after sign-off, any further change gets an entry here **before** the code changes.)
 
 | Date | Change | Reason | Sections updated |
 |---|---|---|---|
 | 2026-10-17 | Working-day count and leave accrual are implemented twice: TypeScript (`src/lib/domain`) and SQL (`leave_count_days`, `leave_accrued` in migration 0002). Balance check moved into the `submit_leave` function. | A caller of the database function must not be able to pass fake `days`, and the balance check must be atomic with the insert (advisory lock). TypeScript copy still drives the UI and agent. Parity cases to compare: `tests/db/parity.md` | §6 |
-| 2026-10-17 | Agent: AI SDK 7 `generateText` with `isStepCount`; the 5-tool-call cap is a counter inside the tool wrapper (the model cannot raise it), with `stopWhen` as a second net. Tool results are redacted and logged through `log_agent_call` (a role-checking database function), failing closed if the log cannot be written. Drafts go through `create_agent_draft`; reminder emails are queued only by `hr_queue_reminders` after HR presses Confirm. Model list (override with `AI_MODEL`, comma-separated): `gemini-3.5-flash`, then `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3-flash-preview`. **Free tier measured on 2026-10-17: 20 requests per day per model** (Google's error text), and a question with a tool needs 2-3 model calls, so one model serves roughly 7-10 questions a day. A quota or availability error therefore falls through to the next model, but only before any tool has run, so a draft or log row is never duplicated. `gemini-2.5-flash` was tried first and Google rejected it as no longer available to new keys; `gemini-3.8-flash` was tried next but timed out (60 s+) on a one-word prompt while `gemini-3.5-flash` answered in 2-3 s, so 3.5 is the default. Model calls also have a 40 s timeout and one retry. Free limits must be checked in AI Studio. | Same pattern as the other writes (no direct table writes) and the guardrails in section 7.4 | §7 |
+| 2026-10-17 | Agent: AI SDK 7 `generateText` with `isStepCount`; the 5-tool-call cap is a counter inside the tool wrapper (the model cannot raise it), with `stopWhen` as a second net. Tool results are redacted and logged through `log_agent_call` (a role-checking database function), failing closed if the log cannot be written. Drafts go through `create_agent_draft`; reminder emails are queued only by `hr_queue_reminders` after HR presses Confirm. Model list (override with `AI_MODEL`, comma-separated): `gemini-3.5-flash`, then `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3-flash-preview`. **Free tier measured on 2026-10-17: 20 requests per day per model** (Google's error text), and a question with a tool needs 2-3 model calls, so one model serves roughly 7-10 questions a day. A quota or availability error therefore falls through to the next model. (First version: only before any tool had run. Changed later the same day (2026-10-17) after a real user hit "busy" with the tool result already in hand: the next model now continues from the tool calls and results already collected, so tools are still never run twice and no draft or log row is duplicated.) `gemini-2.5-flash` was tried first and Google rejected it as no longer available to new keys; `gemini-3.8-flash` was tried next but timed out (60 s+) on a one-word prompt while `gemini-3.5-flash` answered in 2-3 s, so 3.5 is the default. Model calls also have a 40 s timeout and one retry. Free limits must be checked in AI Studio. | Same pattern as the other writes (no direct table writes) and the guardrails in section 7.4 | §7 |
 | 2026-10-17 | `attendance.status` is nullable and derived by TypeScript on read, not written by SQL. | Avoids a third copy of the day-status rules. | §3.2, §6 |
 | 2026-10-17 | Approval needs no balance re-check. | Pending days are already subtracted in `available`; approval moves pending to used, so `available` is unchanged. | §6 |
 | 2026-10-17 | LOP split divides dates on whole days only (`floor(available)` days use the type, the rest become LOP). | Fractional leave cannot be split across date ranges without half-day rows. | §3.2 |
+| 2026-10-17 | Migration **0005** gives the `service_role` access to the tables. | Found at the first seed run: a new Supabase project does not grant the API roles access to tables created in the SQL editor. The browser roles stay locked down (0003). | §4.2 |
+| 2026-10-17 | Migration **0006** adds a caller check to `leave_available()` and `leave_count_days()`, and hides `leave_accrued()` from browsers. | Found in the plan-mode review: these SECURITY DEFINER functions let any signed-in user read **another person's** balance by id. Now self, manager, HR or the service role only. | §4.2 |
+| 2026-10-17 | Migration **0007** adds `log_agent_call`, `create_agent_draft`, `set_agent_draft_status`, `hr_queue_reminders`. | The agent's log and drafts follow the same "no direct table writes" rule as everything else (rule 9). | §7 |
+| 2026-10-17 | Clerk is set to use the app's own sign-in page (`NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`) and the session token carries both `role: authenticated` and the verified `email`. | Without the setting, Clerk redirects to its hosted page, which did not load on some browsers. The email claim is how the database links a first sign-in to an employee row. | §4.1 |
+| 2026-10-17 | Components receive plain values, never the session or the database client. | In development React serializes server-component props for its debug channel; passing the database client crashed the browser ("reading 'name'"). Recorded in CLAUDE.md. | §4 |
+| 2026-10-17 | Month-end report counts through **yesterday** while the month is running. | Today is unfinished and would show everyone Absent (1 LOP each). | §6 |
+| 2026-10-17 | Seed adds 45 days of insert-only sample attendance. | Reports and calendars need data to show; `ignoreDuplicates` means real punches are never overwritten. | seed |
+| 2026-10-23 | Form-field borders use `--input-border` (#6B7280, 4.83:1) instead of `--line` (1.47:1). | The contrast check found field edges too faint (WCAG 1.4.11). See DESIGN.md §3.2. | DESIGN |
+| 2026-10-23 | **Known gap:** leave types, departments and locations are not editable in the app (only holidays are). | Requirement L1 says HR configures leave types; the seed sets them. Needs a Settings screen plus HR-only database functions (same pattern as holidays). See DESIGN.md §7. | §3, DESIGN |
 
 ---
 
 ## 12. Open questions for sign-off
-1. May HR Reveal full Aadhaar? (This draft says never, per R2.)
-2. Confirm the LOP table (R24): Absent day = 1 LOP, Half Day = 0.5 present + 0.5 LOP. Not stated in the brief.
-3. Confirm Brevo vs another free email option works for sending to arbitrary recipients **[VERIFY]**.
-4. Confirm Gemini free-tier limits and model name at build time.
-5. Maternity leave: weeks → working days conversion (see RESEARCH.md §10).
+**Still for faculty:**
+1. May HR Reveal a full Aadhaar? The brief has a Reveal action, but R2 says Aadhaar is never shown unmasked, so the app never reveals Aadhaar at all (HR can reveal PAN and the bank account number, each logged).
+2. Confirm the LOP table (R24): an Absent day is 1 LOP and a Half Day is 0.5 present + 0.5 LOP. The brief reports "LOP days" but does not define them.
+3. Maternity leave: the app uses 182 calendar days (26 weeks) for the first two children and 84 days after, counted in calendar days (see RESEARCH.md §10 and R30).
+4. Leave types, departments and locations are not editable in the app (the known gap in §11). Is the seed-only setup acceptable, or should a Settings screen be added?
+5. Leave of an HR Admin can only be decided by another HR Admin or their manager; with the seed's single HR Admin and no manager, Rohan's own leave cannot be approved. Acceptable, or should the seed have a second HR Admin?
+
+**Resolved by testing:**
+- Brevo sends to any recipient from a verified sender: verified on the live app (manager and employee emails received).
+- Gemini free tier measured at about 20 requests/day per model; handled with four models (§7, §11).
+- Clerk plus Supabase row-level security with a Clerk token works end to end (login, role from the database, RLS reads).
 
 ---
 

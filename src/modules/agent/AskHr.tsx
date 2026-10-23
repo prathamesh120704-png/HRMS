@@ -77,7 +77,7 @@ export function AskHr({ isManager, isHr }: { isManager: boolean; isHr: boolean }
       <form onSubmit={(e) => { e.preventDefault(); void send(text); }} className="row" style={{ marginTop: 12, flexWrap: 'nowrap' }}>
         <label htmlFor="ask" className="skip">Your question</label>
         <input id="ask" value={text} onChange={(e) => setText(e.target.value)} placeholder="Type a message…" maxLength={1000}
-          style={{ flex: 1, minHeight: 44, padding: '8px 12px', border: '1px solid var(--line)', borderRadius: 8 }} autoComplete="off" />
+          style={{ flex: 1, minHeight: 44, padding: '8px 12px', border: '1px solid var(--input-border)', borderRadius: 8 }} autoComplete="off" />
         <button className="btn" disabled={busy || !text.trim()}>Send</button>
       </form>
     </div>

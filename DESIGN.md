@@ -1,6 +1,6 @@
 # DESIGN.md — Tarang HRMS (Konkan Coastal Foods)
 
-Status: **DRAFT v0.2 — not yet signed off** · Date: 2026-10-17
+Status: **v0.3, updated after the build (2026-10-23) · awaiting faculty sign-off** · first drafted 2026-10-17. Section 7 lists where the built app differs from this design.
 Companion to [ARCHITECTURE.md](ARCHITECTURE.md) and [RESEARCH.md](RESEARCH.md). Rule numbers (R1–R35) refer to RESEARCH.md §11. v0.2 adds the screens the review found missing (§2.15–2.20) and the WFH and cancel flows.
 
 > Ownership note: review and redraw anything you cannot explain. Wireframes are deliberately low-fidelity.
@@ -367,42 +367,45 @@ On phones the sidebar collapses to a bottom tab bar: Home, Attendance, Leave, As
 
 ### 3.1 Product name and logo
 - **Name:** **Tarang** (Konkani/Hindi for "wave"), used as "Tarang HRMS" under the Konkan Coastal Foods name.
-- **Logo:** a rounded square in teal with a white wave line (two crests) and the wordmark "Tarang" to its right. Provided as `public/logo.svg`; a single-colour version for dark backgrounds.
+- **Logo:** a rounded square in teal with a white wave line (two crests) and the wordmark "Tarang" to its right. Built as the inline SVG component `src/components/Logo.tsx` (no image file), so it stays sharp at any size and needs no extra request. There is no dark-background version because the app has no dark theme.
 
 ### 3.2 Colour palette
 
-| Token | Hex | Use | Contrast note |
+| Token | Hex | Use | Measured contrast (WCAG 2.x) |
 |---|---|---|---|
-| `--brand` | `#0F766E` | Primary buttons, links, active nav | White text on brand ≈ 5.5:1 (AA) |
-| `--brand-dark` | `#115E59` | Button hover | White text ≈ 7:1 |
-| `--ink` | `#111827` | Body text | on white ≈ 17:1 |
-| `--muted` | `#4B5563` | Secondary text | on white ≈ 7.5:1 |
-| `--line` | `#D1D5DB` | Borders | Decorative only |
+| `--brand` | `#0F766E` | Primary buttons, links, active nav | White text on brand **5.47:1** (AA); brand text on white 5.47, on page background 5.23 (AA) |
+| `--brand-dark` | `#115E59` | Button hover | White text **7.58:1** (AAA) |
+| `--ink` | `#111827` | Body text | on white **17.74:1**, on page background 16.96 (AAA) |
+| `--muted` | `#4B5563` | Secondary text | on white **7.56:1**, on page background 7.22 (AAA) |
+| `--line` | `#D1D5DB` | Card borders, table dividers | **1.47:1**: decorative only, never the only edge of a control |
+| `--input-border` | `#6B7280` | Edges of inputs, selects, textareas | **4.83:1** on white (needs 3:1 for UI components, WCAG 1.4.11) |
 | `--surface` | `#FFFFFF` / `--bg` `#F8FAFC` | Cards / page | |
-| `--danger` | `#B91C1C` | Errors, destructive | white on danger ≈ 6.5:1 |
-| `--success` | `#15803D` | Success messages | white on success ≈ 5:1 |
-| `--focus` | `#1D4ED8` | 2 px focus ring | visible on all backgrounds |
+| `--danger` | `#B91C1C` | Errors, destructive | white on danger **6.47:1**; danger text on white 6.47 (AA) |
+| `--success` | `#15803D` | Success messages | white on success **5.02:1** (AA) |
+| `--focus` | `#1D4ED8` | 2 px focus ring | **6.70:1** on white (needs 3:1) |
 
-All text/background pairs target WCAG AA (4.5:1 normal text). Re-check the exact ratios with a contrast tool before sign-off.
+**Checked 2026-10-23** with the WCAG relative-luminance formula, for every pair in this section and the alert boxes (error 8.20, info 8.49, success 8.30). All text pairs pass AA (4.5:1) and most pass AAA (7:1). The check found one failure in the first version of the app: form fields used `--line` for their border (1.47:1), so a field's edge was hard to see. Fields now use `--input-border` (4.83:1). Secondary text on a status-colour background (for example grey hint text on the Present green) is 6.88:1.
 
 ### 3.3 Status colours (identical on every screen)
 
 Status is never shown by colour alone: each has a short label and an icon letter, so colour-blind users and CSV/print views stay readable.
 
-| Status | Background | Text | Icon / code | Used in |
-|---|---|---|---|---|
-| Present | `#DCFCE7` | `#14532D` | ✓ P | calendar cells, team list, badges |
-| Half Day | `#FEF3C7` | `#78350F` | ½ H | " |
-| Absent | `#FEE2E2` | `#7F1D1D` | ✕ A | " |
-| On Leave | `#DBEAFE` | `#1E3A8A` | ✈ L | " |
-| Holiday | `#EDE9FE` | `#4C1D95` | ★ HD | " |
-| Weekly Off | `#E5E7EB` | `#1F2937` | – WO | " |
-| Late | `#FFEDD5` | `#7C2D12` | ⏰ (small marker on the day, combined with Present/Half Day) | " |
+| Status | Background | Text | Contrast | Icon / code | Used in |
+|---|---|---|---|---|---|
+| Present | `#DCFCE7` | `#14532D` | 8.30:1 | ✓ P | calendar cells, team list, badges |
+| Half Day | `#FEF3C7` | `#78350F` | 8.15:1 | ½ H | " |
+| Absent | `#FEE2E2` | `#7F1D1D` | 8.20:1 | ✕ A | " |
+| On Leave | `#DBEAFE` | `#1E3A8A` | 8.49:1 | ✈ L | " |
+| Holiday | `#EDE9FE` | `#4C1D95` | 9.23:1 | ★ HD | " |
+| Weekly Off | `#E5E7EB` | `#1F2937` | 11.86:1 | – WO | " |
+| Late | `#FFEDD5` | `#7C2D12` | 8.18:1 | ⏰ (small marker on the day, combined with Present/Half Day) | " |
+
+All seven pairs pass AAA (7:1).
 
 One `StatusBadge` component and one `STATUS_STYLES` map are the only places these colours are defined. Late is an overlay marker, because a day can be both Present and Late.
 
 ### 3.4 Typography
-- Font: **Inter** (fallback system-ui, sans-serif).
+- Font stack: `Inter, system-ui, -apple-system, 'Segoe UI', sans-serif`. Inter is **not downloaded** (no web font, to keep pages light on slow phones), so most people see their system font (Segoe UI on Windows, San Francisco on Apple devices). Layout does not depend on Inter's metrics.
 - Sizes: 12 (caption), 14 (table/body small), 16 (body), 20 (section title), 24 (page title), 32 (dashboard numbers). Line height 1.5 for body.
 - Weights: 400 body, 500 labels, 600 headings.
 - Numbers in balances and tables use tabular figures.
@@ -411,16 +414,16 @@ One `StatusBadge` component and one `STATUS_STYLES` map are the only places thes
 - 4 px base unit; scale 4, 8, 12, 16, 24, 32, 48.
 - Card padding 16 (mobile) / 24 (desktop); gap between cards 16.
 - Radius 8 px (cards, inputs), 999 px (badges).
-- Breakpoints: 640 (phone → tablet), 1024 (sidebar appears).
+- One breakpoint: below 1024 px the sidebar becomes a bottom tab bar, cards stack in one column and tables become stacked cards. (The first draft planned a separate 640 px step; it was not needed.)
 - Minimum touch target 44×44 px; phone side gutter 16 px.
 
 ### 3.6 Reusable components
 
 | Component | Spec |
 |---|---|
-| **Button** | Variants: primary (brand), secondary (outline), danger. States: default, hover, focus ring, disabled, loading (spinner, label kept). Min height 40 (44 on phone) |
+| **Button** | Variants: primary (brand), secondary (outline), danger. States: default, hover, focus ring, disabled, loading (the label changes to "Saving…" and the button is disabled and `aria-busy`; there is no spinner). Min height 44 (36 for small row actions) |
 | **Card** | White surface, 1 px `--line` border, 8 px radius, optional title row and action slot |
-| **Table** | Sticky header, zebra off, row hover, sortable headers where useful, responsive: below 640 px rows become stacked cards |
+| **Table** | Header row, row hover, numbers right-aligned, responsive: below 1024 px rows become stacked cards with a label on each value. No sticky header and no sorting (filters and search narrow the list instead) |
 | **Form field** | Label above, helper text, input, error message below in `--danger` with an icon and `aria-describedby`; error text names the fix ("Enter 10 digits starting with 6–9") |
 | **Status badge** | Pill using §3.3 colours + icon + text label |
 | **Balance card** | Type name, big available number, small line "opening · accrued · used · pending" |
@@ -469,3 +472,25 @@ One `StatusBadge` component and one `STATUS_STYLES` map are the only places thes
 | My leave: optional holidays, certificate | employee_optional_holidays, holidays, leave_requests.attachment_path (Storage) |
 | Agent month-end check | attendance, email_log (draft), agent_drafts, agent_log |
 | Reports | attendance, leave_requests, holidays, locations (no statutory/bank fields) |
+
+---
+
+## 7. Where the built app differs from this design (checked 2026-10-23)
+
+The wireframes above are the plan. These are the honest differences, so the viva is not the first time anyone hears them.
+
+| Wireframe | What was built | Why / status |
+|---|---|---|
+| **2.12 Settings**: tabs for Locations, Departments, Holidays, **Leave types** | One page. Holidays can be added and deleted. Locations and departments are listed read-only. **Leave types are not shown or editable.** | **Gap against requirement L1** ("HR configures leave types"). Leave types are set by the seed. Fix needs a settings screen and an HR-only database function (the same pattern as holidays). Listed as a limitation |
+| **2.4 Add employee**: 5 steps ending in a Review step | 4 steps (Personal, Job, Statutory, Bank) and Save on the last step. No review screen | The form jumps back to the step with an error, which covers most of what a review step was for |
+| **2.1 Home**: "My pending requests" card with Cancel | Today, leave balance, and (managers) an Approvals count and team summary. Pending requests and Cancel live on **My leave** | Keeps the home screen to what is needed without clicking |
+| **2.6 Team attendance**: today's list **and a month grid** | Today's list only | Month view of one person is on My attendance; a team month grid was cut for time |
+| **2.19 Audit log** as its own filterable screen | The **History tab on each employee**, plus the Reveal entries there | Covers E8 (who, what, old, new, when). A cross-employee audit page was not built |
+| **2.18 My leave**: certificate "View" link | "Certificate attached" text. Managers and HR get the secure 60-second link in **Approvals** | Employees do not need to re-open their own certificate |
+| **2.3 Directory**: Active/Inactive radio buttons | A Status dropdown: Active, Inactive, All | Same function, fewer controls on a phone |
+| **2.15 Sign-in**: invite only, no sign-up link | Clerk's sign-in widget. It shows "Continue with Google" and "Sign up" unless these are switched off in the Clerk dashboard (Restrictions and the sign-in methods) | Anyone without an employee record who signs in still lands on **Access denied**, so no data is exposed; switching the options off is a Clerk setting |
+| **§4 Empty, loading and error states** | Empty and error messages exist on every list screen. A **loading skeleton exists for Reports only**. No "Retry" buttons: an error shows a message and the page can be reloaded | Honest scope cut. Pages are rendered on the server, so most screens arrive complete rather than showing a spinner |
+| **3.3 Late** shown as an overlay marker | Built as designed: Late is a marker next to Present or Half Day, never a day status of its own | — |
+| **3.4 Inter font** | Not downloaded; system fonts are used | Keeps pages light; see 3.4 |
+
+What was built **and matches** the design: the colour system (one `STATUS_STYLES` map), the phone layouts for Check in, Apply leave and Ask HR with the bottom tab bar, masked values everywhere, working-day preview on Apply, approver inbox with balance and clash warnings, team leave calendar, Ask HR with the tools used and Confirm buttons.

@@ -3,7 +3,7 @@
 Author: Prathamesh
 Last updated: 2026-10-17
 
-> Status: Drafted from the requirement document, primary legal text (Goa Shops and Establishments Act, 1973) and secondary sources. Items marked **[TO CONFIRM]** or **[TO DO]** need your own check before submission. Re-read every answer and rephrase anything you cannot defend in the viva.
+> Status (2026-10-23): drafted from the requirement document, the primary legal text (Goa Shops and Establishments Act, 1973) and secondary sources. **Still to do by the author:** the interview in §8, and checking the Maternity Benefit Act figures and which Goa Act applies against official sources. Items marked **[TO CONFIRM]** or **[TO DO]** need your own check before submission. Re-read every answer and rephrase anything you cannot defend in the viva.
 
 ---
 

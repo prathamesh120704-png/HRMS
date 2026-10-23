@@ -2,6 +2,8 @@
   --brand: #0F766E; --brand-dark: #115E59; --ink: #111827; --muted: #4B5563; --line: #D1D5DB;
   --bg: #F8FAFC; --surface: #FFFFFF; --danger: #B91C1C; --success: #15803D; --focus: #1D4ED8;
   --radius: 8px;
+  /* Form-field edges need 3:1 against the page (WCAG 1.4.11); --line is only for decorative dividers. */
+  --input-border: #6B7280;
 }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); font-size: 16px; line-height: 1.5; }
@@ -54,7 +56,7 @@ main { padding: 24px; max-width: 1120px; width: 100%; }
 /* forms */
 .field { margin-bottom: 12px; }
 .field label { display: block; font-weight: 500; font-size: 14px; margin-bottom: 4px; }
-.field input, .field select, .field textarea { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.field input, .field select, .field textarea { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--input-border); border-radius: var(--radius); background: #fff; }
 .field [data-error='true'] { border-color: var(--danger); }
 .err { color: var(--danger); font-size: 14px; margin-top: 4px; }
 .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px; font-size: 14px; }
