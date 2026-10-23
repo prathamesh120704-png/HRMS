@@ -89,6 +89,8 @@ Source: Goa, Daman and Diu Shops and Establishments Act, 1973 (as applied in Goa
 
 **Maternity (ss. 18–19).** Six weeks before and six weeks after delivery after 6 months of continuous service. The central Maternity Benefit Act (Section 10) gives a better entitlement.
 
+**Second caveat (added 2026-10-23): the national Labour Codes.** Reports in 2026 say the Occupational Safety, Health and Working Conditions Code, 2020 covers working hours and **earned leave** nationally (8-hour day, a 30-day carry-forward cap) and that it overlaps with state Shops Acts, which mostly still exist. The sources disagree on whether the code is fully in force, and the code is silent on sick and casual leave, which stay with the state Act. See §8a and [Supreme Today](https://supremetoday.ai/indias-employers-face-legal-dilemma-as-osh-code-and-state-shops-acts-clash-20260825108). Treat the Goa 1973 figures above as the **state-law floor** and confirm with faculty which regime governs.
+
 **Caveat on current status.** A secondary source reports that a new Goa Shops and Establishments (Regulation of Employment and Conditions of Service) Act, 2025 was notified on 1 October 2025 to replace the 1973 Act, with its start date to be announced. **[TO CONFIRM]** with the Goa Labour Department which Act currently applies. This project follows the 1973 text.
 
 **Implication for the app.** The 8-hour Present threshold in Konkan's policy matches the 8-hour legal day. Head office (Mon–Fri) and plant (Mon–Sat, Sun off) each give at least one full weekly off, as s. 14 requires.
@@ -137,6 +139,27 @@ How to run it in 15 minutes, with the questions and a note sheet: [docs/INTERVIE
 | What I heard | What I did about it | Where |
 |---|---|---|
 | | | e.g. rule R15, the Apply screen, a decision-log entry |
+
+## 8a. Desk research: what published sources say users dislike (not the interview)
+
+> Added 2026-10-23. This is **secondary research** from public sources. It does **not** replace the interview in §8, which must be a real conversation with a real person. Most sources are HR-software vendors or one organisation's published orders, so they show **common patterns, not measured rates**. I read the two labour-code articles in full; the others I know from search summaries, so open each link before the viva.
+
+| # | Theme | What the sources say (in my words) | Sources |
+|---|---|---|---|
+| 1 | **Nobody is sure of the real balance** | Manual leave tracking causes disputes because employees do not know their current balance and managers are not told about approved leave in time. In the Indian Railways HRMS, a union complained that the balance shown was not updated properly, so supervisors had to calculate and upload it by hand | [uKnowva](https://uknowva.com/blogs/challenges-of-leave-management-module), [Railway HRMS clarification](https://www.gconnect.in/orders-in-brief/railways-orders-in-brief/operationalization-leave-management-module-hrms-indian-railway.html) |
+| 2 | **Approvals are slow, get lost, or are skipped** | Requests sent by email, word of mouth or paper get buried or handled inconsistently. A 2023 Railway Board order notes that some staff apply in the system and then go on leave before it is sanctioned. The same system could not sanction fewer days than were applied for, so people could not plan travel | [uKnowva](https://uknowva.com/blogs/challenges-of-leave-management-module), [Railway Board order, Nov 2023](https://www.staffnews.in/2023/11/implementation-of-leave-management-module-of-hrms.html) |
+| 3 | **Missed punches turn into pay disputes** | Pay in India depends on days worked, so an uncorrected punch can cut salary. Causes include forgotten punches, device failure, work from home, field visits and network sync. The usual fix is: employee request, then manager approval, then HR check, then payroll, with a cut-off date and a record of who changed what. Email and Excel handling loses requests and forces re-typing | [IndPayroll](https://www.indpayroll.com/blog/attendance-regularization-how-to-fix-missed-punches-without-payroll-errors), [Petpooja](https://blog.petpooja.com/operations-workflows/attendance-regularisation-meaning-process-best-practices), [Mynd](https://www.myndsolution.com/making-attendance-fair-and-easy-a-guide-to-regularization-policies/), [Digisme](https://www.digisme.in/blog/what-to-do-when-employees-miss-punch-in-biometric-attendance/) |
+| 4 | **Hard to use on a phone or a slow connection** | A case study describes a legacy portal that worked only on the office network or VPN, with a clumsy leave request, unusable on the move. Vendors argue Indian HR tools should be built for phones first and stay light on slow internet; managers want to approve leave and see the team calendar from a phone | [UX case study](https://uxplanet.org/case-study-of-employee-self-services-mobile-app-19c752e05c15), [Darwinbox](https://darwinbox.com/blog/mobile-hrms-india), [Aspire Systems case study](https://www.aspiresys.com/casestudies/enabling-a-self-service-hr-mobile-application-for-an-electronics-giant-powered-by-eQuipMe.pdf) |
+| 5 | **The legal rules are moving** | Reports say the new Labour Codes set one national cap of **30 days** of earned-leave carry-forward (earlier state rules allowed up to 45), let workers encash the excess every year, and accrue leave at 1 day per 20 days worked. The sources **disagree on whether the codes are fully in force**, several states have not notified their rules, and states still have their own Shops Acts, so the two regimes can overlap and conflict. Employers are advised to apply the more generous provision | [People Matters, Apr 2026](https://www.peoplematters.in/news/strategic-hr/leave-carry-forward-and-encashment-rules-set-for-nationwide-standardisation-49221), [Supreme Today](https://supremetoday.ai/indias-employers-face-legal-dilemma-as-osh-code-and-state-shops-acts-clash-20260825108), [Outlook Money](https://www.outlookmoney.com/news/new-labour-codes-change-heres-how-you-earn-carry-and-encash-leave) |
+
+### What this suggests for Tarang (and where it falls short)
+| Theme | What Tarang does about it | Honest limit |
+|---|---|---|
+| 1 Balance | One formula (R21) shows opening, accrued, used, pending and available. Pending days are held at once, so nobody can spend a day twice. Ask HR gets the number from the same function as the screen | Balances are calculated live, never typed in, so HR cannot "fix" one by hand: they use an adjustment |
+| 2 Approvals | The approver sees a count on the home screen, a request inbox with balance and clash warnings, and an email on every submit and decision. A day taken without approval stays **Absent and costs 1 LOP** (R24); it is never silently treated as leave | Like the Railway system, a manager can only approve or reject the **whole** request, not fewer days. Not built |
+| 3 Missed punch | A check-in with no check-out is flagged "missed punch" and counts Absent until corrected (R25). The employee asks for a correction with a reason, the manager approves, only the last 30 days are allowed (R33: the cut-off), and every change is recorded | Corrections need a manager. There is no automatic fix for a device failure because there is no biometric device (out of scope) |
+| 4 Phone | Phone layouts and a bottom tab bar for Check in, Apply and Ask HR; light pages with no heavy images; Ask HR understands Hinglish | Needs an internet connection. No SMS or feature-phone path |
+| 5 Law | EL carry-forward is capped at 30 days (R35), which matches the reported national cap | **The Goa Act, 1973 s.23 lets leave build up to 45 days**, so the 30-day company cap is *less* than the Goa Act, though equal to the reported national code. Which law governs is an open question for faculty (see §11). Annual encashment is payroll, which is out of scope |
 
 ## 9. Sandwich rule
 
@@ -240,6 +263,7 @@ These fill gaps the requirement document leaves open. They are **proposed decisi
 3. Maternity: 182 calendar days (26 weeks) as the entitlement; confirm.
 4. Which Act applies in Goa now (1973 vs 2025)?
 5. May HR reveal full Aadhaar? The brief says Reveal exists but R2 says never show unmasked; this design says never.
+6. **EL carry-forward.** The company policy caps it at 30 days (R35). The Goa Act, 1973 s.23 lets leave accumulate up to 45 days, and reports say the new national Labour Code caps it at 30. Which law governs, and is the 30-day company cap acceptable? (§8a, §5)
 
 ---
 
@@ -254,4 +278,18 @@ These fill gaps the requirement document leaves open. They are **proposed decisi
 7. Keka, Sandwich Leave Policy — https://www.keka.com/sandwich-leave-policy
 8. PocketHRMS, Sandwich Leave Policy: Meaning, Examples and Rules — https://www.pockethrms.com/blog/what-is-sandwich-leave-policy/
 
-**Note on sources.** Items 4–5 and 6–8 are secondary sources (law-firm notes and HR vendor pages), not the Act text. Verify against the official text (indiacode.nic.in) where marked.
+9. uKnowva, Challenges of the leave management module — https://uknowva.com/blogs/challenges-of-leave-management-module
+10. Railway Board order on the HRMS leave module, 23 Nov 2023 — https://www.staffnews.in/2023/11/implementation-of-leave-management-module-of-hrms.html
+11. Operationalisation of the Leave Management Module of HRMS in Indian Railways (clarification) — https://www.gconnect.in/orders-in-brief/railways-orders-in-brief/operationalization-leave-management-module-hrms-indian-railway.html
+12. IndPayroll, Attendance regularization: how to fix missed punches without payroll errors — https://www.indpayroll.com/blog/attendance-regularization-how-to-fix-missed-punches-without-payroll-errors
+13. Petpooja, Attendance regularisation: meaning, process, best practices — https://blog.petpooja.com/operations-workflows/attendance-regularisation-meaning-process-best-practices
+14. Mynd Solution, A guide to regularization policies — https://www.myndsolution.com/making-attendance-fair-and-easy-a-guide-to-regularization-policies/
+15. Digisme, What to do when employees miss punch in biometric attendance — https://www.digisme.in/blog/what-to-do-when-employees-miss-punch-in-biometric-attendance/
+16. UX Planet, Case study of an employee self-services mobile app — https://uxplanet.org/case-study-of-employee-self-services-mobile-app-19c752e05c15
+17. Darwinbox, Why India's HRMS must be mobile-first — https://darwinbox.com/blog/mobile-hrms-india
+18. Aspire Systems, Self-service HR mobile application case study — https://www.aspiresys.com/casestudies/enabling-a-self-service-hr-mobile-application-for-an-electronics-giant-powered-by-eQuipMe.pdf
+19. People Matters, Leave carry-forward and encashment rules set for nationwide standardisation (14 Apr 2026) — https://www.peoplematters.in/news/strategic-hr/leave-carry-forward-and-encashment-rules-set-for-nationwide-standardisation-49221 (read in full)
+20. Supreme Today, OSH Code and State Shops Acts clash (2026) — https://supremetoday.ai/indias-employers-face-legal-dilemma-as-osh-code-and-state-shops-acts-clash-20260825108 (read in full)
+21. Outlook Money, New labour codes: how you earn, carry and encash leave — https://www.outlookmoney.com/news/new-labour-codes-change-heres-how-you-earn-carry-and-encash-leave
+
+**Note on sources.** Items 4–5 and 6–8 are secondary sources (law-firm notes and HR vendor pages), not the Act text. Items 9–18 are vendor blogs, case studies and one organisation's published orders, used for **patterns of complaint, not statistics**. Items 19–20 were read in full; the rest were summarised from search results and should be opened before the viva. Verify legal points against official text (indiacode.nic.in) where marked.

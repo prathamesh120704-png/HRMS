@@ -61,3 +61,15 @@ Fill in RESEARCH.md §8:
 - "Who did you interview and what did they tell you?"
 - "What is the one thing in your app that came from that conversation?"
 Know the answer without notes. Do not claim the interview influenced a feature unless it actually did.
+
+## 7. The very short version (a WhatsApp or voice-note chat, about 5 minutes)
+If a call is not possible, send this to **one real person** who works at a company with a leave and attendance system, and use their **actual replies**:
+
+> Hi, I am doing a college project on HR systems and need 5 minutes of your help. I will only use your first name (or "a relative"). Could you answer these in a message or voice note?
+> 1. What do you use at work to apply for leave and mark attendance?
+> 2. Tell me about the last time you applied for leave: what did you do, and how long until you got an answer?
+> 3. Have you ever been unsure how much leave you had left, or seen a wrong number?
+> 4. What happens when you forget to punch in or out?
+> 5. What do you dislike most about it?
+
+Paste what they wrote (or the key lines from the voice note) into RESEARCH.md §8 as their words, with their permission, then fill in the table of what you changed because of it. Do not edit their words to say something they did not say.

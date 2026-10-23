@@ -18,7 +18,7 @@ Links to open (the repo is public):
 >
 > Documents (please skim before we meet): ARCHITECTURE.md, DESIGN.md and RESEARCH.md at https://github.com/prathamesh120704-png/HRMS ; live app https://hrms-pi-three.vercel.app
 >
-> I have 10 short decisions I need your view on (listed in docs/FACULTY-REVIEW.md in the repo), mainly the LOP definition, Aadhaar reveal, and maternity leave.
+> I have 11 short decisions I need your view on (listed in docs/FACULTY-REVIEW.md in the repo), mainly the LOP definition, Aadhaar reveal, and maternity leave.
 >
 > Thank you,
 > Prathamesh
@@ -35,7 +35,7 @@ Links to open (the repo is public):
 
 If asked "does the app match the documents?": point at the **decision log** (ARCHITECTURE.md §11): every change from the first plan is dated with the reason.
 
-## 3. Decisions I need from faculty
+## 3. Decisions I need from faculty (11)
 These are cases the brief leaves open. For each, I made a choice and recorded it. Please confirm or change.
 
 | # | Question | What the app does now | Where |
@@ -50,6 +50,7 @@ These are cases the brief leaves open. For each, I made a choice and recorded it
 | 8 | **Leave types, departments, locations** cannot be edited in the app (only holidays can). The brief says HR configures leave types (L1). | Set by the seed. Known gap, documented. **Should I build the Settings screen, or is the seed-only setup acceptable?** | DESIGN §7 |
 | 9 | **HR's own leave.** Nobody can decide their own request, and the seed has one HR Admin. | HR's own leave cannot be approved. Demo uses employee requests. Should the seed have a second HR Admin? | R34 |
 | 10 | **Demo and the AI.** The free AI tier is about 20 requests a day per model. | Four models are tried in turn; the demo keeps to a few questions | ARCHITECTURE §7 |
+| 11 | **EL carry-forward.** The company policy caps it at 30 days. The Goa Act, 1973 s.23 allows building up to 45 days; reports say the new national Labour Code caps it at 30. | The app uses the policy's 30 (R35). Which law governs? | RESEARCH §8a, §5 |
 
 ## 4. Sign-off record (fill in at the meeting)
 | Document | Version | Reviewed by | Date | Decision | Changes requested |
