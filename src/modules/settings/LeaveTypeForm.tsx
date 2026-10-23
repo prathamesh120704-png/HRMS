@@ -1,5 +1,5 @@
 'use client';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { Field, SelectField } from '@/components/ui/Field';
 import { SubmitButton } from '@/components/ui/SubmitButton';
 import { ACCRUAL_LABEL, ACCRUAL_METHODS } from '@/lib/validation/leaveType';
@@ -18,14 +18,17 @@ const ACCRUAL_OPTIONS = ACCRUAL_METHODS.map((m) => ({ value: m, label: ACCRUAL_L
  */
 export function LeaveTypeForm({ mode, type }: { mode: 'add' | 'edit'; type?: LeaveTypeValues }) {
   const [state, action] = useActionState<ActionState, FormData>(mode === 'add' ? addLeaveTypeAction : updateLeaveTypeAction, {});
-  const e = state.errors ?? {};
+  // The result of the LAST save must not linger once the person starts editing again: a stale green "Saved" next to a
+  // changed field makes it look as if the new value was saved when it has not been submitted yet.
+  const [dirty, setDirty] = useState(false);
+  const e = dirty ? {} : (state.errors ?? {});
   const v = state.values ?? {};
   const val = (k: keyof LeaveTypeValues, fallback: string | number = '') => v[k as string] ?? (type?.[k] !== undefined ? String(type[k]) : String(fallback));
   const half = v.half_day_allowed !== undefined ? v.half_day_allowed === 'on' : (type?.half_day_allowed ?? false);
 
   return (
-    <form action={action} noValidate>
-      {state.message && <div className={`alert ${state.ok ? 'alert-ok' : 'alert-bad'}`} role={state.ok ? 'status' : 'alert'}>{state.message}</div>}
+    <form action={action} noValidate onInput={() => setDirty(true)} onSubmit={() => setDirty(false)}>
+      {!dirty && state.message && <div className={`alert ${state.ok ? 'alert-ok' : 'alert-bad'}`} role={state.ok ? 'status' : 'alert'}>{state.message}</div>}
       {mode === 'edit' && <input type="hidden" name="id" value={type?.id} />}
       <div className="grid g2">
         {mode === 'add' && (
