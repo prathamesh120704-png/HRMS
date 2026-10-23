@@ -366,3 +366,13 @@ Dated entries for every change from the plan, and the reason. (Sign-off with fac
 | 14 | Email failures | `email_log` queue with retry (§3.2) |
 | 15 | Supabase free pause | Daily cron keeps it awake (§4.2) |
 | 16 | LOP split atomicity | Group approved/cancelled together only (§3.2) |
+
+---
+
+## Sign-off
+
+| Reviewed by | Date | Version | Decision | Changes requested |
+|---|---|---|---|---|
+| | | v0.3 | ☐ signed off ☐ changes requested | |
+
+Meeting pack and the questions to confirm: [docs/FACULTY-REVIEW.md](docs/FACULTY-REVIEW.md). After sign-off, change the status line at the top of ARCHITECTURE.md to "signed off on [date] by [name]", and record every later change in the decision log (ARCHITECTURE.md §11) before changing the code.

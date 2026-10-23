@@ -16,6 +16,8 @@ Indian HR rules throughout: PAN, Aadhaar, UAN and IFSC validation, IST everywher
 | [DEMO.md](DEMO.md) | The 5–7 minute demo script |
 | [docs/TEST-REPORT.md](docs/TEST-REPORT.md) | Automated checklist results (43 checks) |
 | [docs/MANUAL-CHECKLIST.md](docs/MANUAL-CHECKLIST.md) | Checklist items that need a signed-in browser |
+| [docs/INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) | How to run and write up the §8 interview in 15 minutes |
+| [docs/FACULTY-REVIEW.md](docs/FACULTY-REVIEW.md) | The 20-minute sign-off meeting pack: agenda, 10 decisions, sign-off record |
 | [tests/agent/prompts.md](tests/agent/prompts.md) | The 20 agent attack/behaviour prompts and results |
 
 ## Status

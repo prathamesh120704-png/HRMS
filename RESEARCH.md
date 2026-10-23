@@ -117,16 +117,26 @@ Common industry practice, and the rule used here:
 
 ## 8. Interview with a working professional
 
-**[TO DO — you must do this yourself.]** This cannot be written for you; it has to be a real conversation.
+**[TO DO: the author must do this; it has to be a real conversation, and the answers below must be what the person actually said.]**
+How to run it in 15 minutes, with the questions and a note sheet: [docs/INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md).
 
-- Who (role, industry; can be anonymised):
-- Date of interview:
-- HR system they use:
-- What they like:
-- What they dislike (leave balance mistakes? slow approvals? mobile support?):
-- What this changes in my design:
+**Who** (role and industry; a first name or "a relative" is enough, with their permission):
+**Date, length, and how** (in person, phone):
+**The HR system they use** (name, or "Excel and email"):
 
-Suggested questions: How do you apply for leave and how long does approval take? Have you ever been shown the wrong balance? How are missed punches fixed? What would you change first?
+**What they told me** (their words, 4 to 6 lines; short quotes are good):
+1.
+2.
+3.
+
+**What they dislike most** (wrong balances? slow approvals? hard on a phone? missed punches?):
+
+**What surprised me** (something I had not thought of):
+
+**What I changed or decided because of it** (each one should point at a rule, a screen, or a decision in ARCHITECTURE.md):
+| What I heard | What I did about it | Where |
+|---|---|---|
+| | | e.g. rule R15, the Apply screen, a decision-log entry |
 
 ## 9. Sandwich rule
 

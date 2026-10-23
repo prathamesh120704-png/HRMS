@@ -494,3 +494,13 @@ The wireframes above are the plan. These are the honest differences, so the viva
 | **3.4 Inter font** | Not downloaded; system fonts are used | Keeps pages light; see 3.4 |
 
 What was built **and matches** the design: the colour system (one `STATUS_STYLES` map), the phone layouts for Check in, Apply leave and Ask HR with the bottom tab bar, masked values everywhere, working-day preview on Apply, approver inbox with balance and clash warnings, team leave calendar, Ask HR with the tools used and Confirm buttons.
+
+---
+
+## Sign-off
+
+| Reviewed by | Date | Version | Decision | Changes requested |
+|---|---|---|---|---|
+| | | v0.3 | ☐ signed off ☐ changes requested | |
+
+Meeting pack and the questions to confirm: [docs/FACULTY-REVIEW.md](docs/FACULTY-REVIEW.md). After sign-off, change the status line at the top of DESIGN.md to "signed off on [date] by [name]", and record every later change in the decision log (ARCHITECTURE.md §11) before changing the code.
