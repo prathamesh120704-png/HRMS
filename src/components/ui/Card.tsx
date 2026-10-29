@@ -1,3 +1,5 @@
+import { Icon } from '@/components/icons';
+
 export function Card({ title, children, action, className = '' }: {
   title?: string;
   children: React.ReactNode;
@@ -32,6 +34,7 @@ export function PageHeader({ title, sub, action }: { title: string; sub?: string
 export function EmptyState({ title, hint }: { title: string; hint?: string }) {
   return (
     <div className="empty">
+      <div className="empty-icon"><Icon name="inbox-empty" size={26} /></div>
       <p><strong>{title}</strong></p>
       {hint && <p className="hint">{hint}</p>}
     </div>

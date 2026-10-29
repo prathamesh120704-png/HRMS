@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { Card, EmptyState, PageHeader } from '@/components/ui/Card';
+import { BalanceTile } from '@/components/ui/BalanceTile';
 import { Pill } from '@/components/ui/StatusBadge';
 import { requireEmployee } from '@/lib/auth/session';
 import { formatDateIST, todayIST } from '@/lib/time/ist';
 import { cancelLeaveAction, toggleOptionalHolidayAction } from '@/modules/leave/actions';
 import { balancesFor, myRequests, optionalHolidays, type LeaveRequestRow } from '@/modules/leave/queries';
 
+const num = (x: number) => (Number.isInteger(x) ? String(x) : String(Math.round(x * 100) / 100));
 const TONE = { pending: 'warn', approved: 'ok', rejected: 'bad', cancelled: 'neutral' } as const;
 
 export default async function MyLeave({ searchParams }: { searchParams: Promise<{ submitted?: string; cancelled?: string; error?: string }> }) {
@@ -28,14 +30,12 @@ export default async function MyLeave({ searchParams }: { searchParams: Promise<
       {f.cancelled && <div className="alert alert-ok" role="status">Request cancelled and your balance restored.</div>}
       {f.error && <div className="alert alert-bad" role="alert">{f.error}</div>}
 
-      <div className="grid g3">
+      <div className="tiles" style={{ marginBottom: 16 }}>
         {cards.map(({ type, balance: b }) => (
-          <Card key={type.code} title={type.name}>
-            <div className="stat"><div className="n">{b.available.toFixed(1)}</div>available</div>
-            <p className="hint" style={{ marginTop: 8 }}>
-              opening {b.opening.toFixed(1)} · accrued {b.accrued.toFixed(2).replace(/\.?0+$/, '')} · used {b.used.toFixed(1)} · pending {b.pending.toFixed(1)}
-            </p>
-          </Card>
+          <BalanceTile
+            key={type.code} code={type.code} name={type.name} available={b.available} total={b.opening + b.adjustment + b.accrued}
+            detail={`opening ${num(b.opening)} · accrued ${num(b.accrued)} · used ${num(b.used)} · pending ${num(b.pending)}`}
+          />
         ))}
       </div>
 

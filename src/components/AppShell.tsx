@@ -4,15 +4,22 @@ import { NavLinks, type NavItem } from './NavLinks';
 
 export function navFor(s: { isHr: boolean; isManager: boolean }): NavItem[] {
   const items: NavItem[] = [
-    { href: '/dashboard', label: 'Home' },
-    { href: '/attendance', label: 'Attendance' },
-    { href: '/leave', label: 'Leave' },
-    { href: '/leave/apply', label: 'Apply' },
-    { href: '/ask', label: 'Ask HR' },
-    { href: '/profile', label: 'Profile' },
+    { href: '/dashboard', label: 'Home', icon: 'home' },
+    { href: '/attendance', label: 'Attendance', icon: 'clock' },
+    { href: '/leave', label: 'Leave', icon: 'calendar' },
+    { href: '/leave/apply', label: 'Apply', icon: 'edit' },
+    { href: '/ask', label: 'Ask HR', icon: 'chat' },
+    { href: '/profile', label: 'Profile', icon: 'user' },
   ];
-  if (s.isHr || s.isManager) items.push({ href: '/approvals', label: 'Approvals' }, { href: '/team', label: 'Team' }, { href: '/team/leave', label: 'Leave calendar' }, { href: '/reports', label: 'Reports' });
-  if (s.isHr) items.push({ href: '/employees', label: 'Employees' }, { href: '/settings', label: 'Settings' });
+  if (s.isHr || s.isManager) {
+    items.push(
+      { href: '/approvals', label: 'Approvals', icon: 'inbox' },
+      { href: '/team', label: 'Team', icon: 'users' },
+      { href: '/team/leave', label: 'Leave calendar', icon: 'calendar-days' },
+      { href: '/reports', label: 'Reports', icon: 'chart' },
+    );
+  }
+  if (s.isHr) items.push({ href: '/employees', label: 'Employees', icon: 'id' }, { href: '/settings', label: 'Settings', icon: 'settings' });
   return items;
 }
 

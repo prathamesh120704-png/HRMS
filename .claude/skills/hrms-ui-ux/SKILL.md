@@ -117,3 +117,11 @@ Never use colour alone: always pair with text/icon. Never reuse these hues for u
 - Silent auto-submit by the agent; unlabeled icon buttons; infinite spinners.
 - New fonts, new colours or new spacing values outside the tokens.
 - Out-of-scope UI: payroll, PF/ESI/TDS, recruitment, performance reviews, biometrics/GPS, shift rosters, native app.
+
+## 12. Components added in the 2026-10-29 polish pass
+Reuse these instead of making new ones:
+- `Icon` (`components/icons.tsx`) for menu and empty-state icons. Decorative: always keep the text label.
+- `BalanceTile` for any leave balance. The bar is a visual aid; the number and the words carry the meaning.
+- `Skeleton` / `PageSkeleton` for loading, `error.tsx` (Try again plus a reference) and `not-found.tsx` for failures, all inside the app shell.
+- Use `minmax(0, 1fr)` for grid columns that hold wide content (calendars, tables); a plain `1fr` lets the content push the page sideways on a phone.
+- New colours: `--brand-tint` and `--warn`, with measured contrast in DESIGN.md §3.2. Check any new pair before using it.

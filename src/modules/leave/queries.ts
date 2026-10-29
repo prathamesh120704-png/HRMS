@@ -81,7 +81,11 @@ export async function balanceCards(db: SupabaseClient, e: Employee, year: number
   const all = await balancesFor(db, e, year, asOf);
   return all
     .filter((b) => ['CL', 'SL', 'EL'].includes(b.type.code))
-    .map((b) => ({ code: b.type.code, available: b.balance.available, quota: b.type.annualQuota }));
+    .map((b) => ({
+      code: b.type.code, name: b.type.name, available: b.balance.available, quota: b.type.annualQuota,
+      // What this person has been granted so far this year (opening + adjustment + accrued): the bar shows how much of it is left.
+      granted: b.balance.opening + b.balance.adjustment + b.balance.accrued,
+    }));
 }
 
 export interface LeaveRequestRow {

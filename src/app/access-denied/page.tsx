@@ -3,7 +3,7 @@ import { Logo } from '@/components/Logo';
 
 export default function AccessDenied() {
   return (
-    <main id="main" style={{ display: 'grid', placeItems: 'center', minHeight: '100vh', padding: 16 }}>
+    <main id="main" className="auth-bg">
       <div className="card" style={{ maxWidth: 480 }}>
         <Logo />
         <h1>Access denied</h1>

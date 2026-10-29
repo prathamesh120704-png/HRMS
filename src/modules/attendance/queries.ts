@@ -2,7 +2,8 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { deriveDayStatus, type DayResult, type Punch } from '@/lib/domain/dayStatus';
 import type { ApprovedLeave, Holiday, WorkCalendar } from '@/lib/domain/types';
-import { dayOfWeek, eachDate, monthRange, type ISODate } from '@/lib/time/ist';
+import { monthSummary, type MonthSummary } from '@/lib/domain/monthSummary';
+import { addDays, dayOfWeek, eachDate, monthRange, type ISODate } from '@/lib/time/ist';
 
 interface Who { id: string; location_id: string; date_of_joining: string; last_working_day: string | null }
 
@@ -49,6 +50,14 @@ export interface MonthDay { date: ISODate; result: DayResult; holidayName?: stri
 
 /** A: month calendar for one employee, using the same deriveDayStatus as every other screen. */
 export async function monthFor(db: SupabaseClient, who: Who, month: string, today: ISODate): Promise<MonthDay[]> {
+  return (await monthWithSummary(db, who, month, today)).days;
+}
+
+/**
+ * The calendar days AND the month-so-far totals from the one `monthSummary` function (rule R24), so the dashboard strip
+ * can never disagree with the month-end report. Counted through yesterday while the month is running, because today is unfinished.
+ */
+export async function monthWithSummary(db: SupabaseClient, who: Who, month: string, today: ISODate): Promise<{ days: MonthDay[]; summary: MonthSummary }> {
   const { first, last } = monthRange(month);
   const [calFor, att, leaves] = await Promise.all([
     calendars(db, [who.location_id], [who.id], first, last),
@@ -59,10 +68,15 @@ export async function monthFor(db: SupabaseClient, who: Who, month: string, toda
   const cal = calFor(who);
   const punches = new Map<string, Punch>(((att.data ?? []) as AttRow[]).map((r) => [r.date, toPunch(r)]));
   const approved = ((leaves.data ?? []) as unknown as LeaveRow[]).map(toLeave);
-  return eachDate(first, last).map((date) => {
+  const days = eachDate(first, last).map((date) => {
     const result = deriveDayStatus({ date, cal, punch: punches.get(date), leave: approved.find((l) => date >= l.from && date <= l.to) ?? null });
     return { date, result, holidayName: cal.holidays.find((h) => h.date === date)?.name };
   });
+  const through = last < today ? last : addDays(today, -1);
+  const summary = monthSummary({
+    month, cal, punches, leaves: approved, joinDate: who.date_of_joining, lastWorkingDay: who.last_working_day, today: through,
+  });
+  return { days, summary };
 }
 
 export async function todayRecord(db: SupabaseClient, employeeId: string, today: ISODate) {

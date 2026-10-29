@@ -36,7 +36,7 @@ export function MonthCalendar({ days, month, today, basePath }: { days: MonthDay
               aria-label={`${date}: ${showStatus ? result.status : 'upcoming'}${result.isLate ? ', late' : ''}`}>
               <b>{Number(date.slice(8))}</b>
               {showStatus && <span>{st.icon} {result.status === 'On Leave' && result.halfLeave ? 'L ½' : st.code}</span>}
-              {holidayName && showStatus && result.status === 'Holiday' && <span style={{ fontSize: 11 }}>{holidayName}</span>}
+              {holidayName && showStatus && result.status === 'Holiday' && <span className="holiday-name" style={{ fontSize: 11 }}>{holidayName}</span>}
               {result.isLate && <span className="late" style={{ color: STATUS_STYLES.Late.fg }}>⏰ Late</span>}
               {result.missedPunch && <span className="late">Missed punch</span>}
             </div>

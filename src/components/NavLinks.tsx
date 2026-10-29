@@ -1,8 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Icon, type IconName } from './icons';
 
-export interface NavItem { href: string; label: string }
+export interface NavItem { href: string; label: string; icon: IconName }
 
 export function NavLinks({ items, variant }: { items: NavItem[]; variant: 'side' | 'bottom' }) {
   const path = usePathname();
@@ -14,7 +15,10 @@ export function NavLinks({ items, variant }: { items: NavItem[]; variant: 'side'
       {items.map((i) => {
         const active = i.href === best;
         return (
-          <Link key={i.href} href={i.href} aria-current={active ? 'page' : undefined}>{i.label}</Link>
+          <Link key={i.href} href={i.href} aria-current={active ? 'page' : undefined}>
+            <Icon name={i.icon} size={variant === 'side' ? 20 : 22} />
+            <span>{i.label}</span>
+          </Link>
         );
       })}
     </nav>

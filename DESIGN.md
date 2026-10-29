@@ -1,6 +1,6 @@
 # DESIGN.md — Tarang HRMS (Konkan Coastal Foods)
 
-Status: **v0.3, updated after the build (2026-10-23) · awaiting faculty sign-off** · first drafted 2026-10-17. Section 7 lists where the built app differs from this design.
+Status: **v0.4, updated after the build and a UI polish pass (2026-10-29) · awaiting faculty sign-off** · first drafted 2026-10-17. Section 7 lists where the built app differs from this design.
 Companion to [ARCHITECTURE.md](ARCHITECTURE.md) and [RESEARCH.md](RESEARCH.md). Rule numbers (R1–R35) refer to RESEARCH.md §11. v0.2 adds the screens the review found missing (§2.15–2.20) and the WFH and cancel flows.
 
 > Ownership note: review and redraw anything you cannot explain. Wireframes are deliberately low-fidelity.
@@ -383,6 +383,8 @@ On phones the sidebar collapses to a bottom tab bar: Home, Attendance, Leave, As
 | `--danger` | `#B91C1C` | Errors, destructive | white on danger **6.47:1**; danger text on white 6.47 (AA) |
 | `--success` | `#15803D` | Success messages | white on success **5.02:1** (AA) |
 | `--focus` | `#1D4ED8` | 2 px focus ring | **6.70:1** on white (needs 3:1) |
+| `--brand-tint` | `#E6F4F1` | Active menu item, small code chips, empty-state icon, tab highlight | brand-dark text on tint **6.71:1**, ink **15.69:1**, muted **6.68:1**, brand **4.84:1** (all AA) |
+| `--warn` | `#B45309` | "Less than half left" bar and text accents | amber on white **5.02:1** (AA); as a bar fill against its grey track **4.06:1** (needs 3:1) |
 
 **Checked 2026-10-23** with the WCAG relative-luminance formula, for every pair in this section and the alert boxes (error 8.20, info 8.49, success 8.30). All text pairs pass AA (4.5:1) and most pass AAA (7:1). The check found one failure in the first version of the app: form fields used `--line` for their border (1.47:1), so a field's edge was hard to see. Fields now use `--input-border` (4.83:1). Secondary text on a status-colour background (for example grey hint text on the Present green) is 6.88:1.
 
@@ -426,7 +428,11 @@ One `StatusBadge` component and one `STATUS_STYLES` map are the only places thes
 | **Table** | Header row, row hover, numbers right-aligned, responsive: below 1024 px rows become stacked cards with a label on each value. No sticky header and no sorting (filters and search narrow the list instead) |
 | **Form field** | Label above, helper text, input, error message below in `--danger` with an icon and `aria-describedby`; error text names the fix ("Enter 10 digits starting with 6–9") |
 | **Status badge** | Pill using §3.3 colours + icon + text label |
-| **Balance card** | Type name, big available number, small line "opening · accrued · used · pending" |
+| **Balance tile** (`BalanceTile`) | A code chip (CL), the type name, the **available** number, "available of N", and a progress bar of how much of what the person has been granted this year is left. The bar turns amber under 50% and red under 25% or at zero, **and the words change too** ("less than half left", "running low", "none left"), so colour is never the only signal. Bar fills against the grey track: brand 4.42:1, amber 4.06:1, red 5.23:1 (all above the 3:1 needed). My leave also shows "opening · accrued · used · pending" under each tile |
+| **Menu icons** (`Icon`) | A small stroke icon next to every menu label, in the sidebar and on the phone bar. Decorative (`aria-hidden`): the text label carries the meaning. The active item has a tinted background and a bar on the left (sidebar) or top (phone) |
+| **Loading skeleton** (`Skeleton`, `PageSkeleton`) | Grey placeholder shapes inside the app shell while a page loads, so the menu stays put. Animation stops for people who prefer reduced motion |
+| **Error page** (`error.tsx`) | Plain words ("Something went wrong… your data is safe"), a **Try again** button, a link to Home, and a reference number for support. It never shows the technical message |
+| **Not-found page** (`not-found.tsx`) | Inside the app shell: "We can't find that page. It may have moved, or you may not have access to it." A person opening another employee's link lands here on purpose, so it does not reveal whether the page exists |
 | **Empty / loading / error blocks** | See §4 |
 | **Toast** | Success/error, auto-dismiss 5 s, `role="status"` |
 | **Confirm dialog** | For approve/reject, deactivate, Reveal; always states the effect |
@@ -483,13 +489,13 @@ The wireframes above are the plan. These are the honest differences, so the viva
 |---|---|---|
 | **2.12 Settings**: tabs for Locations, Departments, Holidays, Leave types | One page with sections. **Leave types are editable** (quota, how earned, carry-forward limit, half days; add a new type; never delete) and holidays can be added and deleted. Locations and departments are listed read-only | Leave-type configuration (requirement L1) was added on 2026-10-23. Departments and locations stay seed-only |
 | **2.4 Add employee**: 5 steps ending in a Review step | 4 steps (Personal, Job, Statutory, Bank) and Save on the last step. No review screen | The form jumps back to the step with an error, which covers most of what a review step was for |
-| **2.1 Home**: "My pending requests" card with Cancel | Today, leave balance, and (managers) an Approvals count and team summary. Pending requests and Cancel live on **My leave** | Keeps the home screen to what is needed without clicking |
+| **2.1 Home**: "My pending requests" card with Cancel | Today (Check in and Work from home), **leave balance tiles with bars**, a **"This month so far"** strip (days present, days on leave, Late marks, Loss of Pay days: the same `monthSummary` function as the month-end report, counted through yesterday), and for managers an Approvals count and a team summary. Pending requests and Cancel live on **My leave** | Keeps the home screen to what is needed without clicking; the month strip answers "how am I doing this month" at a glance |
 | **2.6 Team attendance**: today's list **and a month grid** | Today's list only | Month view of one person is on My attendance; a team month grid was cut for time |
 | **2.19 Audit log** as its own filterable screen | The **History tab on each employee**, plus the Reveal entries there | Covers E8 (who, what, old, new, when). A cross-employee audit page was not built |
 | **2.18 My leave**: certificate "View" link | "Certificate attached" text. Managers and HR get the secure 60-second link in **Approvals** | Employees do not need to re-open their own certificate |
 | **2.3 Directory**: Active/Inactive radio buttons | A Status dropdown: Active, Inactive, All | Same function, fewer controls on a phone |
 | **2.15 Sign-in**: invite only, no sign-up link | Clerk's sign-in widget. It shows "Continue with Google" and "Sign up" unless these are switched off in the Clerk dashboard (Restrictions and the sign-in methods) | Anyone without an employee record who signs in still lands on **Access denied**, so no data is exposed; switching the options off is a Clerk setting |
-| **§4 Empty, loading and error states** | Empty and error messages exist on every list screen. A **loading skeleton exists for Reports only**. No "Retry" buttons: an error shows a message and the page can be reloaded | Honest scope cut. Pages are rendered on the server, so most screens arrive complete rather than showing a spinner |
+| **§4 Empty, loading and error states** | Empty states have an icon and a next step. **Every signed-in page now has a loading skeleton** (one `loading.tsx` for the whole app shell) and an **error page with Try again and a reference number**; opening something you may not see gives a friendly 404 inside the shell. A failed button action still shows its message inline | Closed on 2026-10-29. Server-rendered pages mostly arrive complete, so the skeleton appears on slower connections and during navigation |
 | **3.3 Late** shown as an overlay marker | Built as designed: Late is a marker next to Present or Half Day, never a day status of its own | — |
 | **3.4 Inter font** | Not downloaded; system fonts are used | Keeps pages light; see 3.4 |
 
